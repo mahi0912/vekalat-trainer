@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # امکان اجرای دستی از تب Actions
+  workflow_dispatch:
+
+# مجوزهای لازم برای انتشار روی Pages.
+# GITHUB_TOKEN داخلی استفاده می‌شود؛ هیچ Personal Access Token‌ای لازم نیست.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# اگر چند پوش پشت‌سرهم انجام شود، آخرین اجرا کامل می‌شود و اجراهای قبلی کنسل نمی‌شوند
+# تا یک دیپلوی نیمه‌کاره سایت را خراب نکند.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: اعتبارسنجی بانک سؤال
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: بررسی یکپارچگی سؤالات و تصاویر
+        run: python3 scripts/verify_site.py
+
+  deploy:
+    name: انتشار روی GitHub Pages
+    needs: verify
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: حذف فایل‌های غیرلازم از خروجی
+        # index.html فقط bank.js را بارگذاری می‌کند؛ bank.json نسخه تکراری
+        # و ۵٫۶ مگابایتی همان داده است و نیازی به انتشار ندارد.
+        run: rm -f site/bank.json
+
+      - uses: actions/configure-pages@v5
+
+      - name: ساخت آرتیفکت
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: دیپلوی
+        id: deployment
+        uses: actions/deploy-pages@v4
