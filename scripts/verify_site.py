@@ -48,9 +48,16 @@ def load_bank() -> list | None:
 
 
 def main() -> int:
-    for name in ("index.html", "bank.js"):
+    for name in ("index.html", "bank.js", "gate.js", "auth-config.js"):
         if not (SITE / name).exists():
             fail(f"فایل ضروری site/{name} وجود ندارد")
+
+    html = (SITE / "index.html").read_text(encoding="utf-8") if (SITE / "index.html").exists() else ""
+    for ref in ("auth-config.js", "gate.js"):
+        if f'src="{ref}"' not in html:
+            fail(f"index.html فایل {ref} را بارگذاری نمی‌کند")
+    if 'src="bank.js"' in html:
+        fail("index.html نباید bank.js را مستقیم بارگذاری کند؛ gate.js بعد از ورود آن را لود می‌کند")
 
     bank = load_bank()
     if bank is None:
