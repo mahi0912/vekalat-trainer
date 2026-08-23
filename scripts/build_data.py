@@ -5,7 +5,7 @@
 bank.json تنها منبع حقیقت است. این اسکریپت آن را به دو بخش می‌شکند تا مرورگر
 فقط چیزی را دانلود کند که واقعاً لازم دارد:
 
-  data/questions.json      متن سؤال، گزینه‌ها، کلید و تصاویر — همه ۹۱۰ سؤال (~۵۲۰KB)
+  data/questions.json      متن سؤال، گزینه‌ها، کلید و تصاویر — همه ۹۱۰ سؤال
                            برای صفحه خانه و کل مسیر آزمون کافی است.
   data/review/<سال>.json   تحلیل حقوقی چهارگزینه‌ای — فقط هنگام نمایش نتیجه
                            و فقط برای سال‌های همان جلسه بارگذاری می‌شود.
@@ -32,6 +32,19 @@ OUT = SITE / "data"
 # فیلدهایی که در مسیر آزمون لازم‌اند
 QUIZ_FIELDS = ("id", "year", "q", "courseUnit", "answer", "questionText", "options", "sourcePages")
 
+# تحلیل‌های بازنویسی‌شده که روی نسخه قالبی قدیمی سوار می‌شوند
+REWRITTEN = SITE / "analyses"
+
+
+def load_rewritten() -> dict:
+    """تمام site/analyses/<سال>.json را در یک نگاشت شناسه → تحلیل ادغام می‌کند."""
+    out: dict = {}
+    if not REWRITTEN.exists():
+        return out
+    for path in sorted(REWRITTEN.glob("*.json")):
+        out.update(json.loads(path.read_text(encoding="utf-8")))
+    return out
+
 
 def jdump(path: Path, obj) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -49,7 +62,9 @@ def main() -> int:
     if OUT.exists():
         shutil.rmtree(OUT)
 
+    rewritten = load_rewritten()
     questions, review_by_year, problems = [], {}, []
+    changed_keys = []
 
     for item in bank:
         qid = item.get("id", "?")
@@ -66,14 +81,39 @@ def main() -> int:
             row["sourcePages"] = [item["asset"]] if item.get("asset") else []
         questions.append(row)
 
-        opts = v2.get("optionAnalyses") or {}
-        entry = {
-            "legalBasis": v2.get("legalBasis") or item.get("legalBasis") or "",
-            "summary": v2.get("summary") or item.get("lawExplanation") or item.get("explanation") or "",
-            "options": [opts.get(str(i), "") for i in (1, 2, 3, 4)],
-        }
-        if v2.get("currentLawNote"):
-            entry["currentLawNote"] = v2["currentLawNote"]
+        new = rewritten.get(qid)
+        if new:
+            entry = {
+                "status": "rewritten",
+                "legalBasis": new["legalBasis"],
+                "summary": new["summary"],
+                "options": new["options"],
+                "keyAtExam": new["keyAtExam"],
+                "keyToday": new["keyToday"],
+                "lawChanged": bool(new.get("lawChanged")),
+                "changeNote": new.get("changeNote", ""),
+                "sources": new.get("sources", []),
+                "reviewedAt": new.get("reviewedAt", ""),
+            }
+            if entry["keyAtExam"] != row["answer"]:
+                problems.append(f"{qid}: keyAtExam با کلید دفترچه نمی‌خواند")
+            # مبنای نمره‌دهی قانون امروز است
+            if entry["keyToday"] != row["answer"]:
+                row["answerToday"] = entry["keyToday"]
+                changed_keys.append(qid)
+        else:
+            opts = v2.get("optionAnalyses") or {}
+            entry = {
+                "status": "legacy",
+                "legalBasis": v2.get("legalBasis") or item.get("legalBasis") or "",
+                "summary": v2.get("summary") or item.get("lawExplanation") or item.get("explanation") or "",
+                "options": [opts.get(str(i), "") for i in (1, 2, 3, 4)],
+                "keyAtExam": row["answer"],
+                "keyToday": row["answer"],
+                "lawChanged": False,
+            }
+            if v2.get("currentLawNote"):
+                entry["changeNote"] = v2["currentLawNote"]
         review_by_year.setdefault(int(item["year"]), {})[qid] = entry
 
     if problems:
@@ -92,17 +132,24 @@ def main() -> int:
         review_total += size
         print(f"data/review/{year}.json          {size/1024:7.0f} KB")
 
+    rewritten_ids = [q["id"] for q in questions if q["id"] in rewritten]
     units = Counter(r["courseUnit"] for r in questions)
     years = Counter(int(r["year"]) for r in questions)
     jdump(OUT / "meta.json", {
         "total": len(questions),
         "years": {str(y): years[y] for y in sorted(years)},
         "units": dict(sorted(units.items())),
+        "rewritten": len(rewritten_ids),
+        "keyChanged": len(changed_keys),
     })
 
     print(f"\nبارگذاری اولیه: {total/1024:.0f} KB "
           f"(به‌جای {SRC.stat().st_size/1024/1024:.1f} MB)")
     print(f"تحلیل‌ها روی خواست: {review_total/1024:.0f} KB در {len(review_by_year)} فایل")
+    print(f"تحلیل بازنویسی‌شده: {len(rewritten_ids)} از {len(questions)}"
+          f"  |  کلید تغییرکرده با قانون روز: {len(changed_keys)}")
+    if changed_keys:
+        print("  " + ", ".join(changed_keys))
     return 0
 
 

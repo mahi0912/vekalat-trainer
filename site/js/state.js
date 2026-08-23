@@ -12,6 +12,13 @@ const KEY = 'vekalat.session.v1';
  */
 export const PENALTY = 1 / 3;
 
+/**
+ * کلید ملاکِ نمره‌دهی: پاسخ صحیح بر مبنای قانون امروز.
+ * اگر تحلیل بازنویسی‌شده نشان داده باشد که قانون تغییر کرده، answerToday
+ * روی سؤال نشسته است؛ در غیر این صورت همان کلید دفترچه ملاک است.
+ */
+export const keyOf = q => +(q.answerToday ?? q.answer);
+
 export function create(qs, title, mode) {
   return { qs: qs.map(q => q.id), title, mode, i: 0, ans: {}, flags: {}, startedAt: Date.now() };
 }
@@ -38,14 +45,18 @@ export function score(qs, ans) {
   let correct = 0, wrong = 0, blank = 0;
   const units = new Map();
 
+  let lawChanged = 0;
+
   for (const q of qs) {
     const picked = ans[q.id];
+    const key = keyOf(q);
+    if (q.answerToday != null && +q.answerToday !== +q.answer) lawChanged++;
     const bucket = units.get(q.courseUnit)
       || units.set(q.courseUnit, { unit: q.courseUnit, total: 0, correct: 0, wrong: 0, blank: 0 }).get(q.courseUnit);
     bucket.total++;
 
     if (!picked) { blank++; bucket.blank++; }
-    else if (+picked === +q.answer) { correct++; bucket.correct++; }
+    else if (+picked === key) { correct++; bucket.correct++; }
     else { wrong++; bucket.wrong++; }
   }
 
@@ -55,7 +66,7 @@ export function score(qs, ans) {
 
   for (const u of units.values()) u.rate = u.total ? u.correct / u.total * 100 : 0;
 
-  return { correct, wrong, blank, total: qs.length, raw, net, units: [...units.values()] };
+  return { correct, wrong, blank, total: qs.length, raw, net, lawChanged, units: [...units.values()] };
 }
 
 /**

@@ -1,7 +1,7 @@
 /** ساخت HTML صفحه‌ها. هیچ نمایی مستقیماً به داده دست نمی‌زند؛ همه چیز پارامتر می‌گیرد. */
 import { esc, fa, pct } from './util.js';
 import { COURSE_GROUPS, YEARS } from './groups.js';
-import { insights, PENALTY } from './state.js';
+import { insights, keyOf, PENALTY } from './state.js';
 
 /* ---------- خانه ---------- */
 
@@ -176,6 +176,10 @@ export function results(s, title) {
           </div>
         </div>
       </div>
+      ${s.lawChanged ? `<div class="warning" style="margin-top:14px">
+        در ${fa(s.lawChanged)} سؤال این آزمون، قانون بعد از برگزاری آزمون تغییر کرده و پاسخ صحیح امروز
+        با کلید دفترچه فرق دارد. نمره بر مبنای <b>قانون امروز</b> حساب شده است؛ توضیح هر مورد در کارت
+        همان سؤال آمده.</div>` : ''}
       <p class="muted" style="margin:14px 0 0">
         درصد خام = صحیح ÷ کل. درصد با نمره منفی = (صحیح − غلط×⅓) ÷ کل، مطابق شیوه نمره‌دهی آزمون مرکز وکلا؛
         هر ${fa(Math.round(1 / PENALTY))} پاسخ غلط یک پاسخ صحیح را خنثی می‌کند.
@@ -201,29 +205,54 @@ export function results(s, title) {
 
 export function reviewCard(q, picked, analysis) {
   const a = analysis || { legalBasis: '', summary: '', options: [] };
+  const keyExam = +(a.keyAtExam ?? q.answer);
+  const keyToday = keyOf(q);
+  const changed = keyExam !== keyToday;
+
   const rows = [1, 2, 3, 4].map(i => {
-    const cls = i === +q.answer ? 'correct' : (picked === i ? 'picked-wrong' : '');
-    const mark = i === +q.answer ? ' ✅' : (picked === i ? ' ❌ انتخاب تو' : '');
+    const cls = i === keyToday ? 'correct' : (picked === i ? 'picked-wrong' : '');
+    const marks = [];
+    if (i === keyToday) marks.push('✅ پاسخ صحیح بر مبنای قانون امروز');
+    if (i === keyExam && changed) marks.push('📕 کلید دفترچه در سال آزمون');
+    if (picked === i && i !== keyToday) marks.push('❌ انتخاب تو');
     return `<div class="an ${cls}">
-              <b>گزینه ${fa(i)}${mark} — ${esc(q.options[i - 1] || '')}</b>
-              ${esc(a.options[i - 1] || 'تحلیل این گزینه ثبت نشده است.')}
+              <b>گزینه ${fa(i)}${marks.length ? ' — ' + marks.join(' · ') : ''}</b>
+              <div style="color:var(--muted);margin-bottom:4px">${esc(q.options[i - 1] || '')}</div>
+              ${esc(a.options[i - 1] || 'تحلیل این گزینه هنوز بازنویسی نشده است.')}
             </div>`;
   }).join('');
+
+  const changeBanner = changed ? `
+    <div class="warning" style="margin-bottom:10px">
+      <b>قانون تغییر کرده است.</b> کلید رسمی دفترچه در سال ${fa(q.year)} گزینه ${fa(keyExam)} بود،
+      اما بر مبنای قانون امروز پاسخ صحیح گزینه ${fa(keyToday)} است.
+      ${a.changeNote ? '<br>' + esc(a.changeNote) : ''}
+      <br><small>نمره تو بر مبنای قانون امروز حساب شده است.</small>
+    </div>` : (a.changeNote ? `
+    <details style="margin-bottom:10px"><summary class="muted" style="cursor:pointer">وضعیت قانون تا امروز</summary>
+      <p class="muted" style="margin:8px 0 0">${esc(a.changeNote)}</p></details>` : '');
+
+  const badge = a.status === 'rewritten'
+    ? `<span class="pill" style="background:var(--good-soft);color:var(--good)">تحلیل بازبینی‌شده${a.reviewedAt ? ' · ' + esc(a.reviewedAt) : ''}</span>`
+    : '<span class="pill">تحلیل قالبی قدیمی</span>';
 
   return `<div class="card">
     <div class="qhead">
       <span class="pill accent">${esc(q.courseUnit)}</span>
       <span class="pill">سال ${fa(q.year)}</span>
       <span class="pill">سؤال ${fa(q.q)}</span>
-      <span class="pill" style="margin-inline-start:auto">پاسخ تو: ${picked ? fa(picked) : '—'} | کلید: ${fa(q.answer)}</span>
+      ${badge}
+      <span class="pill" style="margin-inline-start:auto">پاسخ تو: ${picked ? fa(picked) : '—'} | کلید: ${fa(keyToday)}${changed ? ` (دفترچه: ${fa(keyExam)})` : ''}</span>
     </div>
     <p class="qtext">${esc(q.questionText)}</p>
+    ${changeBanner}
     ${a.legalBasis || a.summary ? `<div class="legal">
       ${a.legalBasis ? `<b>مستند قانونی:</b> ${esc(a.legalBasis)}<br>` : ''}
       ${a.summary ? `<b>جمع‌بندی:</b> ${esc(a.summary)}` : ''}
-      ${a.currentLawNote ? `<br><b>توجه:</b> ${esc(a.currentLawNote)}` : ''}
     </div>` : ''}
     ${rows}
+    ${(a.sources && a.sources.length) ? `<p class="muted" style="margin:10px 0 0">
+      <b>مستندات:</b> ${a.sources.map(x => esc(x)).join(' · ')}</p>` : ''}
     <details class="src" style="margin-top:12px;border:1px solid var(--border);border-radius:12px">
       <summary>اصل دفترچه</summary>${sourceBlock(q)}
     </details>

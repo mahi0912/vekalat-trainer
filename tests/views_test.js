@@ -75,3 +75,34 @@ ok('XSS: تگ script خام نیست', x.indexOf('<script>') === -1);
 ok('XSS: به شکل escape شده هست', x.indexOf('&lt;img') > -1);
 
 console.log(failures ? ('\n' + failures + ' تست ناموفق') : '\nهمه تست‌ها موفق');
+
+// ---------- کارت مرور وقتی قانون تغییر کرده ----------
+var qch = JSON.parse(JSON.stringify(qs[0]));
+qch.answer = 1; qch.answerToday = 3;
+var ach = {
+  status: 'rewritten', reviewedAt: '۱۴۰۵/۰۶/۰۱',
+  legalBasis: 'ماده ۱۰۴ قانون مجازات اسلامی (اصلاحی ۱۳۹۹)',
+  summary: 'جمع‌بندی نمونه.',
+  keyAtExam: 1, keyToday: 3, lawChanged: true,
+  changeNote: 'این جرم با اصلاح ۱۳۹۹ قابل گذشت شد.',
+  options: ['تحلیل ۱', 'تحلیل ۲', 'تحلیل ۳', 'تحلیل ۴'],
+  sources: ['ماده ۱۰۴ ق.م.ا', 'قانون کاهش مجازات حبس تعزیری ۱۳۹۹'],
+};
+var rch = reviewCard(qch, 1, ach);
+html('reviewCard تغییر قانون', rch);
+ok('بنر تغییر قانون هست',        rch.indexOf('قانون تغییر کرده است') > -1);
+ok('کلید دفترچه ذکر شده',        rch.indexOf('📕') > -1);
+ok('پاسخ امروز علامت خورده',      rch.indexOf('✅') > -1);
+ok('توضیح تغییر آمده',           rch.indexOf('قابل گذشت شد') > -1);
+ok('مستندات فهرست شده',          rch.indexOf('ماده ۱۰۴ ق.م.ا') > -1);
+ok('نشان بازبینی‌شده دارد',       rch.indexOf('تحلیل بازبینی‌شده') > -1);
+
+// تحلیل قدیمی باید نشان «قالبی» بگیرد
+var rleg = reviewCard(qs[1], 0, { status: 'legacy', legalBasis: 'الف', summary: 'ب', options: ['۱','۲','۳','۴'] });
+ok('تحلیل قدیمی نشان قالبی دارد', rleg.indexOf('تحلیل قالبی قدیمی') > -1);
+ok('بدون تغییر بنر ندارد',        rleg.indexOf('قانون تغییر کرده است') === -1);
+
+// خلاصه نتیجه باید تعداد سؤالات تغییرکرده را بگوید
+var sch = score(qch ? [qch] : [], { });
+var rr = results(sch, 'تست');
+ok('خلاصه نتیجه هشدار می‌دهد', rr.indexOf('قانون بعد از برگزاری آزمون تغییر کرده') > -1);

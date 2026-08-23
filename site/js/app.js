@@ -170,7 +170,7 @@ async function renderResults() {
 
   const filters = {
     all: () => true,
-    wrong: q => s.ans[q.id] && +s.ans[q.id] !== +q.answer,
+    wrong: q => s.ans[q.id] && +s.ans[q.id] !== session.keyOf(q),
     blank: q => !s.ans[q.id],
     flag: q => !!s.flags[q.id],
   };

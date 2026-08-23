@@ -59,6 +59,8 @@ def main() -> int:
     if meta.get("total") != len(questions):
         fail("meta.json با questions.json هم‌خوان نیست")
 
+    by_id = {q.get("id"): q for q in questions}
+    rewritten_count = [0]
     seen: set[str] = set()
     missing_assets: set[str] = set()
     by_year: dict[int, list[str]] = {}
@@ -100,15 +102,41 @@ def main() -> int:
             entry = analyses.get(qid)
             if not entry:
                 fail(f"سؤال {qid}: تحلیل ندارد")
-            elif sum(1 for t in entry.get("options", []) if t) != 4:
+                continue
+            if sum(1 for t in entry.get("options", []) if t) != 4:
                 warnings.append(f"سؤال {qid}: تحلیل هر چهار گزینه کامل نیست")
+
+            booklet = by_id[qid]["answer"]
+            at_exam, today = entry.get("keyAtExam"), entry.get("keyToday")
+            if at_exam != booklet:
+                fail(f"سؤال {qid}: keyAtExam ({at_exam}) با کلید دفترچه ({booklet}) نمی‌خواند")
+            if today not in (1, 2, 3, 4):
+                fail(f"سؤال {qid}: keyToday نامعتبر ({today!r})")
+            if bool(entry.get("lawChanged")) != (at_exam != today):
+                fail(f"سؤال {qid}: lawChanged با تفاوت کلیدها هم‌خوان نیست")
+            if entry.get("lawChanged") and not entry.get("changeNote"):
+                fail(f"سؤال {qid}: قانون تغییر کرده ولی توضیحی ثبت نشده")
+
+            if entry.get("status") == "rewritten":
+                rewritten_count[0] += 1
+                for i, text in enumerate(entry.get("options", []), 1):
+                    if len(text or "") < 60:
+                        warnings.append(f"سؤال {qid} گزینه {i}: تحلیل بازنویسی‌شده خیلی کوتاه است")
+                if not entry.get("sources"):
+                    warnings.append(f"سؤال {qid}: مستندات ثبت نشده")
+            # کلید امروز باید روی خود سؤال هم نشسته باشد تا نمره‌دهی درست کار کند
+            expected = today if today != booklet else None
+            if by_id[qid].get("answerToday") != expected:
+                fail(f"سؤال {qid}: answerToday در questions.json با تحلیل هم‌خوان نیست")
 
     if missing_assets:
         fail(f"{len(missing_assets)} تصویر موجود نیست، از جمله: " + ", ".join(sorted(missing_assets)[:8]))
 
     size = questions_file.stat().st_size / 1024
     review_size = sum(p.stat().st_size for p in (DATA / "review").glob("*.json")) / 1024
+    changed = sum(1 for q in questions if q.get("answerToday"))
     print(f"سؤالات: {len(questions)}  |  بارگذاری اولیه: {size:.0f} KB  |  تحلیل‌ها روی خواست: {review_size:.0f} KB")
+    print(f"تحلیل بازنویسی‌شده: {rewritten_count[0]}  |  کلید تغییرکرده با قانون روز: {changed}")
     print("توزیع سالانه: " + ", ".join(f"{y}={len(v)}" for y, v in sorted(by_year.items())))
     return report()
 
