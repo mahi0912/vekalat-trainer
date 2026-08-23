@@ -34,6 +34,14 @@ QUIZ_FIELDS = ("id", "year", "q", "courseUnit", "answer", "questionText", "optio
 
 # تحلیل‌های بازنویسی‌شده که روی نسخه قالبی قدیمی سوار می‌شوند
 REWRITTEN = SITE / "analyses"
+UNIT_FIX = SITE / "unit-corrections.json"
+
+
+def load_unit_corrections() -> dict:
+    """تصحیح واحد درسی سؤالاتی که در bank.json اشتباه برچسب خورده‌اند."""
+    if not UNIT_FIX.exists():
+        return {}
+    return json.loads(UNIT_FIX.read_text(encoding="utf-8")).get("corrections", {})
 
 
 def load_rewritten() -> dict:
@@ -63,6 +71,7 @@ def main() -> int:
         shutil.rmtree(OUT)
 
     rewritten = load_rewritten()
+    unit_fix = load_unit_corrections()
     questions, review_by_year, problems = [], {}, []
     changed_keys = []
 
@@ -71,6 +80,8 @@ def main() -> int:
         v2 = item.get("analysisV2") or {}
 
         row = {k: item.get(k) for k in QUIZ_FIELDS}
+        if qid in unit_fix:
+            row["courseUnit"] = unit_fix[qid]
         if not (isinstance(row["options"], list) and len(row["options"]) == 4):
             problems.append(f"{qid}: چهار گزینه ندارد")
         if row["answer"] not in (1, 2, 3, 4):
@@ -147,6 +158,8 @@ def main() -> int:
     print(f"\nبارگذاری اولیه: {total/1024:.0f} KB "
           f"(به‌جای {SRC.stat().st_size/1024/1024:.1f} MB)")
     print(f"تحلیل‌ها روی خواست: {review_total/1024:.0f} KB در {len(review_by_year)} فایل")
+    if unit_fix:
+        print(f"واحد درسی تصحیح‌شده: {len(unit_fix)} سؤال")
     print(f"تحلیل بازنویسی‌شده: {len(rewritten_ids)} از {len(questions)}"
           f"  |  کلید تغییرکرده با قانون روز: {len(changed_keys)}")
     if changed_keys:
