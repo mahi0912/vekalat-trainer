@@ -4,6 +4,9 @@ secrets.md
 .env
 .env.*
 
+# داده‌های ساخته‌شده — با scripts/build_data.py از bank.json تولید می‌شوند
+site/data/
+
 # آرشیوها و فایل‌های حجیم
 *.zip
 

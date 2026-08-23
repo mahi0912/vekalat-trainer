@@ -1,0 +1,33 @@
+/**
+ * لایه داده — همه چیز از پوشه data/ می‌آید که scripts/build_data.py می‌سازد.
+ *
+ * questions.json  یک‌بار در شروع لود می‌شود (~۷۷۰KB) و برای کل مسیر آزمون کافی است.
+ * review/<سال>.json  فقط وقتی نتیجه نمایش داده می‌شود، و فقط برای سال‌های همان جلسه.
+ */
+
+const cache = { questions: null, meta: null, review: new Map() };
+
+async function getJSON(path) {
+  const res = await fetch(path, { cache: 'default' });
+  if (!res.ok) throw new Error(`دریافت ${path} ناموفق بود (${res.status})`);
+  return res.json();
+}
+
+export async function questions() {
+  cache.questions ??= await getJSON('data/questions.json');
+  return cache.questions;
+}
+
+export async function meta() {
+  cache.meta ??= await getJSON('data/meta.json');
+  return cache.meta;
+}
+
+/** تحلیل‌های حقوقی سال‌های خواسته‌شده را می‌آورد و در یک نگاشت id → تحلیل ادغام می‌کند. */
+export async function review(years) {
+  const wanted = [...new Set(years)];
+  await Promise.all(wanted.map(async y => {
+    if (!cache.review.has(y)) cache.review.set(y, await getJSON(`data/review/${y}.json`));
+  }));
+  return Object.assign({}, ...wanted.map(y => cache.review.get(y)));
+}

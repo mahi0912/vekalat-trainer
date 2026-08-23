@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   # امکان اجرای دستی از تب Actions
   workflow_dispatch:
 
@@ -21,31 +23,43 @@ concurrency:
 
 jobs:
   verify:
-    name: اعتبارسنجی بانک سؤال
+    name: بررسی کد و بانک سؤال
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: بررسی یکپارچگی سؤالات و تصاویر
+      - name: ساخت فایل‌های داده از bank.json
+        run: python3 scripts/build_data.py
+
+      - name: بررسی نحوی ماژول‌های جاوااسکریپت
+        run: python3 scripts/check_js.py
+
+      - name: تست منطق نمره‌دهی
+        run: python3 scripts/run_tests.py
+
+      - name: اعتبارسنجی سؤالات و تصاویر
         run: python3 scripts/verify_site.py
 
   deploy:
     name: انتشار روی GitHub Pages
     needs: verify
+    # روی pull request فقط بررسی انجام می‌شود، انتشار نه
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: ساخت فایل‌های داده از bank.json
+        run: python3 scripts/build_data.py
 
       - name: فعال‌سازی دروازه ورود
         # هش پسورد از روی سکرت ساخته و در auth-config.js جایگزین می‌شود.
@@ -54,10 +68,10 @@ jobs:
           WEBAPP_PASSWORD: ${{ secrets.WEBAPP_PASSWORD }}
         run: python3 scripts/inject_password.py
 
-      - name: حذف فایل‌های غیرلازم از خروجی
-        # index.html فقط bank.js را بارگذاری می‌کند؛ bank.json نسخه تکراری
-        # و ۵٫۶ مگابایتی همان داده است و نیازی به انتشار ندارد.
-        run: rm -f site/bank.json
+      - name: حذف منبع داده از خروجی
+        # bank.json منبع حقیقت است ولی مرورگر آن را لازم ندارد؛
+        # data/ که از رویش ساخته شده منتشر می‌شود.
+        run: rm -f site/bank.json site/AUDIT_REPORT.json
 
       - uses: actions/configure-pages@v5
 

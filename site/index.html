@@ -1,60 +1,34 @@
-<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>مربی آزمون وکالت مرکز وکلا</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif}.wrap{max-width:900px;margin:auto;padding:14px 14px 130px}.top{position:sticky;top:0;z-index:50;background:#f6f7fbdd;backdrop-filter:blur(12px);padding:10px 0;border-bottom:1px solid #e6e9ef}.top h1{font-size:21px;margin:0}.muted{color:#687386;font-size:13px}.card{background:white;border:1px solid #e2e6ee;border-radius:18px;padding:16px;margin:14px 0;box-shadow:0 3px 16px #1111}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.btn{border:1px solid #d4d9e2;background:#fff;border-radius:14px;padding:13px 14px;font-size:15px;cursor:pointer;color:#1267c4}.btn.primary{background:#146bd1;color:#fff;border-color:#146bd1}.btn.danger{background:#c83232;color:white}.btn.good{background:#0a7c55;color:white}.btn:disabled{opacity:.45}.unit{font-weight:700}.count{font-size:12px;color:#697386}.qhead{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pill{background:#edf3ff;color:#175bad;border-radius:999px;padding:5px 9px;font-size:12px}.qtext{font-size:18px;line-height:2;font-weight:650;margin:14px 0}.option{width:100%;text-align:right;margin:7px 0;border:1.5px solid #d9dee8;border-radius:14px;padding:13px;line-height:1.8;background:#fff;font-size:16px}.option.sel{border-color:#166bd2;background:#edf5ff}.sourceTitle{font-weight:800;margin-bottom:8px}.sourceHint{font-size:12px;color:#6d7582;margin-bottom:10px}.pages{display:grid;grid-template-columns:1fr;gap:10px}.pageimg{width:100%;height:auto;border:1px solid #d7dce4;border-radius:12px;display:block;background:#eee}.navrow{display:flex;gap:8px;position:sticky;bottom:78px;z-index:45;background:#fffef0;padding:10px;border:1px solid #e5dca4;border-radius:15px;box-shadow:0 5px 22px #0002}.navrow .btn{flex:1}.jump{width:100%;padding:11px;border-radius:12px;border:1px solid #ccc;background:white}.resultbox{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}.metric{background:#f3f6fa;padding:12px 5px;border-radius:12px}.review{border-top:1px solid #eee;padding-top:14px;margin-top:14px}.an{padding:10px 12px;border-radius:11px;background:#f8f4e8;margin:7px 0;line-height:1.9}.an.correct{background:#e9f7f1}.an.userwrong{outline:2px solid #e68585}.legal{background:#eef4ff;border-right:4px solid #2369bf;padding:11px;border-radius:10px;line-height:1.9}.warning{background:#fff3d7;padding:11px;border-radius:12px;color:#7a5512}.homebtn{float:left}.hidden{display:none}@media(max-width:560px){.wrap{padding:10px 10px 145px}.qtext{font-size:17px}.navrow{bottom:88px}.resultbox{grid-template-columns:repeat(2,1fr)}}
-</style></head><body><div class="wrap"><div class="top"><button id="homeBtn" class="btn homebtn hidden">خانه</button><h1>مربی آزمون وکالت مرکز وکلا</h1><div class="muted">۹۱۰ سؤال واقعی ۱۳۹۸ تا ۱۴۰۴ — متن/تصویر اصل دفترچه + تحلیل حقوقی چهارگزینه‌ای</div></div><div id="app"><div class="card">در حال بارگذاری بانک سؤال…</div></div></div><script src="auth-config.js"></script>
-<script src="gate.js"></script>
-<script>
-'use strict';
-let BANK = [];
-const app = document.getElementById('app');
-const homeBtn = document.getElementById('homeBtn');
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let session = null;
-const COURSE_GROUPS = [
-  ['حقوق مدنی',['مدنی ۱ — اشخاص، اهلیت و محجورین','مدنی ۲ — اموال و مالکیت','مدنی ۳ — قواعد عمومی قراردادها','مدنی ۴ — الزامات خارج از قرارداد','مدنی ۵ — خانواده','مدنی ۶ — عقود معین ۱','مدنی ۷ — عقود معین ۲','مدنی ۸ — شفعه، وصیت و ارث']],
-  ['آیین دادرسی مدنی',['آیین دادرسی مدنی ۱ — کلیات، صلاحیت و اقامه دعوا','آیین دادرسی مدنی ۲ — دادرسی، ادله، تأمین و اجرا','آیین دادرسی مدنی ۳ — آراء، اعتراض و داوری']],
-  ['حقوق تجارت',['تجارت ۱ — تاجر و اعمال تجاری','تجارت ۲ — شرکت‌های تجاری','تجارت ۳ — اسناد تجاری و چک','تجارت ۴ — ورشکستگی']],
-  ['حقوق جزا',['جزای عمومی ۱ — اصول و مسئولیت کیفری','جزای عمومی ۲ — مراحل ارتکاب، شرکت، معاونت و تعدد','جزای عمومی ۳ — مجازات‌ها و نهادهای ارفاقی','جزای اختصاصی ۱ — جرایم علیه اشخاص','جزای اختصاصی ۲ — جرایم علیه اموال و مالکیت','جزای اختصاصی ۳ — امنیت، آسایش و جرایم اداری']],
-  ['آیین دادرسی کیفری',['آیین دادرسی کیفری ۱ — کلیات، دعوای عمومی و صلاحیت','آیین دادرسی کیفری ۲ — تحقیقات مقدماتی و تأمین','آیین دادرسی کیفری ۳ — دادگاه، اعتراض و اجرای احکام']],
-  ['متون فقه',['متون فقه ۱ — احوال شخصیه و حدود','متون فقه ۲ — معاملات و قضا']],
-  ['حقوق ثبت',['حقوق ثبت ۱ — ثبت اسناد و دفاتر','حقوق ثبت ۲ — ثبت املاک و اختلافات ثبتی','حقوق ثبت ۳ — اجرای اسناد رسمی']],
-  ['حقوق اساسی',['حقوق اساسی ۱ — اصول و حقوق ملت','حقوق اساسی ۲ — ساختار حکومت و نهادهای اساسی']]
-];
-const UNIT_COUNTS = {};
-function home(){
-  session=null; homeBtn.classList.add('hidden');
-  const years=[1398,1399,1400,1401,1402,1403,1404];
-  const y=years.map(v=>`<button type="button" class="btn" data-year="${v}">آزمون جامع ${v}<div class="count">${BANK.filter(q=>+q.year===v).length} سؤال</div></button>`).join('');
-  const subjects=COURSE_GROUPS.map(([name,units],gi)=>{const total=units.reduce((s,u)=>s+(UNIT_COUNTS[u]||0),0);return `<button type="button" class="btn subjectbtn" data-subject="${gi}"><div class="unit">${esc(name)}</div><div class="count">${total} سؤال — ورود به واحدها</div></button>`}).join('');
-  app.innerHTML=`<div class="card"><h2>آزمون جامع سالانه</h2><div class="grid">${y}</div></div><div class="card"><h2>انتخاب درس</h2><div class="grid">${subjects}</div></div>`;
-  app.querySelectorAll('[data-year]').forEach(b=>b.addEventListener('click',()=>startYear(+b.dataset.year)));
-  app.querySelectorAll('[data-subject]').forEach(b=>b.addEventListener('click',()=>showSubject(+b.dataset.subject)));
-}
-function showSubject(gi){
-  const [name,units]=COURSE_GROUPS[gi]; homeBtn.classList.remove('hidden');
-  const buttons=units.map((u,i)=>`<button type="button" class="btn" data-unit-index="${i}"><div class="unit">${esc(u)}</div><div class="count">${UNIT_COUNTS[u]||0} سؤال</div></button>`).join('');
-  app.innerHTML=`<div class="card"><button type="button" class="btn" id="backHome">بازگشت به درس‌ها</button><h2>${esc(name)}</h2><div class="grid">${buttons}</div></div>`;
-  document.getElementById('backHome').addEventListener('click',home);
-  app.querySelectorAll('[data-unit-index]').forEach(b=>b.addEventListener('click',()=>startUnit(units[+b.dataset.unitIndex])));
-  window.scrollTo(0,0);
-}
-function startYear(y){ start(BANK.filter(q=>+q.year===y).sort((a,b)=>a.q-b.q),`آزمون جامع ${y}`); }
-function startUnit(u){ start(BANK.filter(q=>q.courseUnit===u).sort((a,b)=>(+a.year-+b.year)||(a.q-b.q)),u); }
-function start(qs,title){ if(!qs.length){alert('برای این واحد سوالی ثبت نشده است.');return;} session={qs,title,i:0,ans:{}}; homeBtn.classList.remove('hidden'); renderQ(); }
-function sourceBlock(q){const imgs=(q.sourcePages||[]).map((p,j)=>`<div><div class="muted">${j===0?'صفحه اصل/مجاور':'صفحه ادامه/مجاور'}</div><img class="pageimg" loading="lazy" src="${esc(p)}"></div>`).join(''); return `<div class="sourceTitle">اصل دفترچه</div><div class="sourceHint">برای کنترل سؤال‌ها و گزینه‌های ابتدای/انتهای صفحه، همه صفحات مرتبط نمایش داده می‌شوند.</div><div class="pages">${imgs}</div>`;}
-function qText(q){if(q.questionText&&Array.isArray(q.options)&&q.options.length===4){return `<div class="card"><div class="qtext">${esc(q.questionText)}</div>${q.options.map((o,i)=>`<button type="button" class="option ${session.ans[q.id]===i+1?'sel':''}" data-pick="${i+1}"><b>${i+1})</b> ${esc(o)}</button>`).join('')}</div>`;} return `<div class="card"><div class="warning">متن تایپی موجود نیست؛ سؤال و چهار گزینه را از اصل دفترچه ببین.</div>${[1,2,3,4].map(i=>`<button type="button" class="option" data-pick="${i}">گزینه ${i}</button>`).join('')}</div>`;}
-function renderQ(){const q=session.qs[session.i], n=session.qs.length; const src=`<details class="card"><summary><b>اصل دفترچه و صفحات مرتبط</b></summary>${sourceBlock(q)}</details>`; app.innerHTML=`<div class="card"><div class="qhead"><span class="pill">${esc(session.title)}</span><span class="pill">سال ${q.year}</span><span class="pill">سؤال اصلی ${q.q}</span><span class="pill">${esc(q.courseUnit)}</span></div><div class="muted">سؤال ${session.i+1} از ${n}</div></div>${qText(q)}${src}<div class="card"><div style="display:flex;gap:8px"><button type="button" class="btn" id="prevBtn" ${session.i===0?'disabled':''}>قبلی</button><button type="button" class="btn primary" id="nextBtn" ${session.i===n-1?'disabled':''}>سؤال بعدی</button></div><button type="button" class="btn danger" id="finishBtn" style="width:100%;margin-top:10px">پایان آزمون و مشاهده تحلیل</button></div>`;
-  app.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{session.ans[q.id]=+b.dataset.pick; renderQ();}));
-  document.getElementById('prevBtn').addEventListener('click',()=>{if(session.i>0){session.i--;renderQ();}});
-  document.getElementById('nextBtn').addEventListener('click',()=>{if(session.i<n-1){session.i++;renderQ();}});
-  document.getElementById('finishBtn').addEventListener('click',finish); window.scrollTo(0,0);
-}
-function finish(){ if(confirm('آزمون پایان یابد و نتیجه و تحلیل نمایش داده شود؟')) renderResult(); }
-function renderResult(){let c=0,w=0,b=0;for(const q of session.qs){const a=session.ans[q.id];if(!a)b++;else if(+a===+q.answer)c++;else w++;} const pct=session.qs.length?Math.round(c/session.qs.length*1000)/10:0; app.innerHTML=`<div class="card"><h2>نتیجه ${esc(session.title)}</h2><div class="resultbox"><div class="metric"><b>${c}</b><div>صحیح</div></div><div class="metric"><b>${w}</b><div>غلط</div></div><div class="metric"><b>${b}</b><div>نزده</div></div><div class="metric"><b>${pct}%</b><div>درصد خام</div></div></div></div>${session.qs.map(review).join('')}<div class="navrow"><button type="button" class="btn primary" id="resultHome">بازگشت به خانه</button></div>`; document.getElementById('resultHome').addEventListener('click',home); window.scrollTo(0,0);}
-function review(q){const a=session.ans[q.id],v=q.analysisV2||{},oa=v.optionAnalyses||{},opts=(q.options?.length===4?q.options:['','','','']); const analyses=[1,2,3,4].map(i=>`<div class="an ${i==q.answer?'correct':''} ${a==i&&a!=q.answer?'userwrong':''}"><b>گزینه ${i}${opts[i-1]?` — ${esc(opts[i-1])}`:''}</b><br>${esc(oa[String(i)]||'تحلیل موجود نیست')}</div>`).join(''); return `<div class="card review"><div class="qhead"><span class="pill">سال ${q.year}</span><span class="pill">سؤال ${q.q}</span><span class="pill">${esc(q.courseUnit)}</span></div>${q.questionText?`<div class="qtext">${esc(q.questionText)}</div>`:''}<div><b>پاسخ تو:</b> ${a?`گزینه ${a}`:'بدون پاسخ'} | <b>گزینه کلیدی:</b> ${q.answer}</div><div class="legal"><b>مستند قانونی:</b> ${esc(v.legalBasis||q.legalBasis||'—')}<br><b>جمع‌بندی:</b> ${esc(v.summary||q.lawExplanation||q.explanation||'—')}</div>${analyses}<details><summary>مشاهده اصل دفترچه</summary>${sourceBlock(q)}</details></div>`;}
-homeBtn.addEventListener('click',home);
-window.__bootApp = function(){
-  BANK = window.BANK_DATA || [];
-  for (const q of BANK) UNIT_COUNTS[q.courseUnit] = (UNIT_COUNTS[q.courseUnit]||0)+1;
-  if(BANK.length!==910){app.innerHTML='<div class="card">خطا: بانک سوالات ناقص بارگذاری شده است.</div>';} else {home();}
-};
-</script></body></html>
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="تمرین ۹۱۰ سؤال واقعی آزمون وکالت مرکز وکلا از ۱۳۹۸ تا ۱۴۰۴ همراه با تصویر اصل دفترچه و تحلیل حقوقی چهارگزینه‌ای">
+<title>مربی آزمون وکالت مرکز وکلا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preload" as="fetch" href="data/questions.json" crossorigin>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <button id="homeBtn" class="iconbtn hidden" type="button" title="خانه" aria-label="بازگشت به خانه">🏠</button>
+    <h1 class="brand">مربی آزمون وکالت مرکز وکلا<span>۹۱۰ سؤال واقعی ۱۳۹۸ تا ۱۴۰۴ — اصل دفترچه و تحلیل حقوقی</span></h1>
+    <button id="themeBtn" class="iconbtn" type="button" title="پوسته روشن یا تیره" aria-label="تغییر پوسته">🌗</button>
+  </div>
+</header>
+
+<main class="wrap"><div id="app"></div></main>
+
+<noscript>
+  <div class="wrap"><div class="card"><div class="warning">این برنامه برای کار کردن به جاوااسکریپت نیاز دارد.</div></div></div>
+</noscript>
+
+<script src="auth-config.js"></script>
+<script type="module" src="js/gate.js"></script>
+</body>
+</html>
