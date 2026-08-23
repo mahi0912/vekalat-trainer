@@ -94,6 +94,7 @@ def main() -> int:
                 "changeNote": new.get("changeNote", ""),
                 "sources": new.get("sources", []),
                 "reviewedAt": new.get("reviewedAt", ""),
+                "confidence": new.get("confidence", "high"),
             }
             if entry["keyAtExam"] != row["answer"]:
                 problems.append(f"{qid}: keyAtExam با کلید دفترچه نمی‌خواند")

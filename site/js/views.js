@@ -232,9 +232,11 @@ export function reviewCard(q, picked, analysis) {
     <details style="margin-bottom:10px"><summary class="muted" style="cursor:pointer">وضعیت قانون تا امروز</summary>
       <p class="muted" style="margin:8px 0 0">${esc(a.changeNote)}</p></details>` : '');
 
-  const badge = a.status === 'rewritten'
-    ? `<span class="pill" style="background:var(--good-soft);color:var(--good)">تحلیل بازبینی‌شده${a.reviewedAt ? ' · ' + esc(a.reviewedAt) : ''}</span>`
-    : '<span class="pill">تحلیل قالبی قدیمی</span>';
+  const badge = a.status !== 'rewritten'
+    ? '<span class="pill">تحلیل قالبی قدیمی</span>'
+    : a.confidence === 'needs-check'
+      ? '<span class="pill" style="background:var(--warn-soft);color:var(--warn)">نیازمند تأیید حقوق‌دان</span>'
+      : `<span class="pill" style="background:var(--good-soft);color:var(--good)">تحلیل بازبینی‌شده${a.reviewedAt ? ' · ' + esc(a.reviewedAt) : ''}</span>`;
 
   return `<div class="card">
     <div class="qhead">

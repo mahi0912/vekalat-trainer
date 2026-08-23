@@ -61,6 +61,7 @@ def main() -> int:
 
     by_id = {q.get("id"): q for q in questions}
     rewritten_count = [0]
+    needs_check: list[str] = []
     seen: set[str] = set()
     missing_assets: set[str] = set()
     by_year: dict[int, list[str]] = {}
@@ -124,6 +125,10 @@ def main() -> int:
                         warnings.append(f"سؤال {qid} گزینه {i}: تحلیل بازنویسی‌شده خیلی کوتاه است")
                 if not entry.get("sources"):
                     warnings.append(f"سؤال {qid}: مستندات ثبت نشده")
+                if entry.get("confidence") not in ("high", "needs-check"):
+                    fail(f"سؤال {qid}: confidence نامعتبر ({entry.get('confidence')!r})")
+                elif entry["confidence"] == "needs-check":
+                    needs_check.append(qid)
             # کلید امروز باید روی خود سؤال هم نشسته باشد تا نمره‌دهی درست کار کند
             expected = today if today != booklet else None
             if by_id[qid].get("answerToday") != expected:
@@ -137,6 +142,8 @@ def main() -> int:
     changed = sum(1 for q in questions if q.get("answerToday"))
     print(f"سؤالات: {len(questions)}  |  بارگذاری اولیه: {size:.0f} KB  |  تحلیل‌ها روی خواست: {review_size:.0f} KB")
     print(f"تحلیل بازنویسی‌شده: {rewritten_count[0]}  |  کلید تغییرکرده با قانون روز: {changed}")
+    if needs_check:
+        print(f"نیازمند بازبینی حقوق‌دان ({len(needs_check)}): " + ", ".join(needs_check))
     print("توزیع سالانه: " + ", ".join(f"{y}={len(v)}" for y, v in sorted(by_year.items())))
     return report()
 
