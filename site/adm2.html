@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>آیین دادرسی مدنی ۲</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Noto+Naskh+Arabic:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ground:#EFF3F1; --surface:#FFFFFF; --surface-2:#F7FAF8;
+  --ink:#131E1C; --ink-2:#3D4E4A; --muted:#6A7B77;
+  --line:#D7E0DC; --line-2:#C2CFCA;
+  --accent:#0E6B5C; --accent-soft:#DDEDE8; --accent-ink:#0A5145;
+  --alert:#9E3226; --alert-soft:#F7E4E1;
+  --gold:#7E6218; --gold-soft:#F5EDD8; --gold-line:#DCC98A;
+  --shadow:0 1px 2px rgba(19,30,28,.05), 0 8px 24px -12px rgba(19,30,28,.15);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1413; --surface:#15201D; --surface-2:#1B2723;
+    --ink:#E2EBE7; --ink-2:#B4C4BF; --muted:#849791;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#48BBA6; --accent-soft:#14312B; --accent-ink:#7FD6C4;
+    --alert:#E8806E; --alert-soft:#331915;
+    --gold:#D9B860; --gold-soft:#2A2413; --gold-line:#5A4C24;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1413; --surface:#15201D; --surface-2:#1B2723;
+  --ink:#E2EBE7; --ink-2:#B4C4BF; --muted:#849791;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#48BBA6; --accent-soft:#14312B; --accent-ink:#7FD6C4;
+  --alert:#E8806E; --alert-soft:#331915;
+  --gold:#D9B860; --gold-soft:#2A2413; --gold-line:#5A4C24;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:'Vazirmatn', system-ui, sans-serif;
+  font-size:16.5px; line-height:1.85; font-weight:400;
+  -webkit-font-smoothing:antialiased;
+}
+.rtl{direction:rtl; text-align:right}
+.wrap{max-width:1020px; margin:0 auto; padding:0 20px 110px}
+
+.masthead{
+  border-bottom:2px solid var(--ink); margin-bottom:8px;
+  padding:52px 0 20px; display:flex; flex-wrap:wrap;
+  align-items:flex-end; gap:22px; justify-content:space-between;
+}
+.masthead h1{
+  margin:0; font-size:clamp(2rem,5.5vw,3.05rem); font-weight:900;
+  letter-spacing:-.02em; line-height:1.15; text-wrap:balance;
+}
+.masthead h1 em{font-style:normal; color:var(--accent)}
+.stamp{
+  font-size:.78rem; color:var(--muted); line-height:1.9;
+  border-right:2px solid var(--accent); padding-right:12px; max-width:30ch;
+}
+.stamp b{color:var(--ink-2); font-weight:700; font-variant-numeric:tabular-nums}
+.lede{font-size:1.05rem; color:var(--ink-2); max-width:64ch; margin:24px 0 38px}
+.lede strong{color:var(--ink); font-weight:700}
+
+nav.toc{
+  position:sticky; top:0; z-index:20; background:var(--ground);
+  border-bottom:1px solid var(--line); padding:10px 0; margin-bottom:42px;
+}
+nav.toc ul{list-style:none; margin:0; padding:0; display:flex; gap:6px; flex-wrap:wrap; font-size:.82rem}
+nav.toc a{display:block; padding:5px 11px; border-radius:2px; text-decoration:none; color:var(--ink-2); border:1px solid transparent; transition:.15s}
+nav.toc a:hover{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--line-2)}
+nav.toc a:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+section{margin:0 0 60px; scroll-margin-top:64px}
+.sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px; flex-wrap:wrap}
+.sec-num{font-size:.72rem; font-weight:700; color:var(--accent); letter-spacing:.14em;
+  border:1px solid var(--accent); border-radius:2px; padding:2px 7px; flex:none; font-variant-numeric:tabular-nums}
+h2{margin:0; font-size:clamp(1.35rem,3vw,1.7rem); font-weight:900; letter-spacing:-.015em; text-wrap:balance}
+.sec-sub{color:var(--muted); font-size:.93rem; margin:0 0 22px; max-width:62ch}
+
+/* ── ترفند حفظ ─────────────────────── */
+.trick{
+  background:var(--gold-soft); border:1px solid var(--gold-line);
+  border-radius:4px; padding:16px 18px 16px 18px; margin:18px 0;
+  position:relative;
+}
+.trick::before{
+  content:"ترفند حفظ"; position:absolute; top:-9px; right:16px;
+  background:var(--gold); color:var(--ground); font-size:.66rem; font-weight:700;
+  letter-spacing:.1em; padding:1px 9px; border-radius:2px;
+}
+.trick p{margin:0 0 8px; font-size:.96rem; line-height:1.85}
+.trick p:last-child{margin-bottom:0}
+.trick .say{
+  display:block; font-size:1.22rem; font-weight:900; color:var(--gold);
+  letter-spacing:-.01em; line-height:1.6; margin:4px 0 10px;
+}
+.trick .why{font-size:.88rem; color:var(--ink-2)}
+
+.tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--surface); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:560px; font-size:.93rem}
+thead th{background:var(--surface-2); text-align:right; font-weight:700; font-size:.78rem;
+  letter-spacing:.05em; color:var(--ink-2); padding:11px 15px; border-bottom:1.5px solid var(--line-2); white-space:nowrap}
+tbody td{padding:11px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.75}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.num{font-weight:700; color:var(--gold); font-variant-numeric:tabular-nums; white-space:nowrap}
+td.topic{font-weight:600; width:34%}
+.art{font-size:.79rem; color:var(--accent-ink); background:var(--accent-soft); padding:1px 7px;
+  border-radius:2px; white-space:nowrap; font-weight:600; display:inline-block; font-variant-numeric:tabular-nums}
+.qs{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
+.q{font-size:.68rem; color:var(--muted); border:1px solid var(--line-2); padding:0 5px;
+  border-radius:2px; font-variant-numeric:tabular-nums; white-space:nowrap; line-height:1.7}
+
+.triggers{border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+.trig{display:grid; grid-template-columns:minmax(190px,36%) 1fr; border-bottom:1px solid var(--line)}
+.trig:last-child{border-bottom:none}
+.trig:hover{background:var(--surface-2)}
+.trig-if{padding:14px 16px; border-left:1px solid var(--line); background:var(--surface-2); font-weight:600; font-size:.94rem}
+.trig-if::before{content:"دیدی: "; color:var(--muted); font-weight:400; font-size:.8rem}
+.trig-then{padding:14px 16px; font-size:.94rem}
+.trig-then b{color:var(--accent-ink); font-weight:700}
+@media (max-width:640px){.trig{grid-template-columns:1fr}.trig-if{border-left:none; border-bottom:1px solid var(--line)}}
+
+.pairs{display:grid; gap:20px}
+.pair{border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+.pair-h{padding:11px 16px; background:var(--alert-soft); color:var(--alert); font-weight:700;
+  font-size:.93rem; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px}
+.pair-h::before{content:"دام"; font-size:.66rem; letter-spacing:.1em; font-weight:700;
+  border:1px solid currentColor; border-radius:2px; padding:1px 6px; flex:none}
+.pair-h.calm{background:var(--accent-soft); color:var(--accent-ink)}
+.pair-h.calm::before{content:"دسته‌بندی"}
+.pair-body{display:grid; grid-template-columns:1fr 1fr}
+.pair-col{padding:15px 17px; font-size:.92rem}
+.pair-col:first-child{border-left:1px solid var(--line)}
+.pair-col h4{margin:0 0 8px; font-size:.88rem; font-weight:800; color:var(--accent-ink)}
+.pair-col ul{margin:0; padding-right:16px}
+.pair-col li{margin-bottom:5px}
+.pair-key{grid-column:1/-1; padding:13px 17px; border-top:1px solid var(--line); background:var(--surface-2); font-size:.9rem; color:var(--ink-2)}
+.pair-key b{color:var(--ink); font-weight:700}
+@media (max-width:640px){.pair-body{grid-template-columns:1fr}.pair-col:first-child{border-left:none; border-bottom:1px solid var(--line)}}
+
+.statute{font-family:'Noto Naskh Arabic', serif; font-size:.95rem; line-height:2.1;
+  background:var(--surface-2); border-right:3px solid var(--accent); padding:12px 16px;
+  margin:14px 0; color:var(--ink-2); border-radius:0 3px 3px 0}
+.statute cite{display:block; font-family:'Vazirmatn',sans-serif; font-style:normal; font-size:.75rem; color:var(--muted); margin-top:6px}
+
+.points{list-style:none; margin:0; padding:0; display:grid; gap:11px}
+.points li{background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:13px 16px; font-size:.94rem; box-shadow:var(--shadow)}
+.points b{color:var(--accent-ink); font-weight:700}
+.points .no{color:var(--alert); font-weight:700}
+
+.tree{background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:6px 4px; box-shadow:var(--shadow)}
+.branch{border-bottom:1px solid var(--line); padding:12px 16px}
+.branch:last-child{border-bottom:none}
+.branch-q{font-weight:700; font-size:.95rem; margin-bottom:5px}
+.branch-a{font-size:.91rem; color:var(--ink-2); padding-right:14px; border-right:2px solid var(--accent-soft)}
+.branch-a b{color:var(--accent-ink)}
+
+.freq{display:grid; gap:5px}
+.freq-row{display:grid; grid-template-columns:minmax(148px,26%) 1fr 42px; align-items:center; gap:12px; font-size:.87rem}
+.freq-name{font-weight:600}
+.bar{height:16px; background:var(--accent-soft); border-radius:2px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--accent); border-radius:2px}
+.freq-n{text-align:left; color:var(--muted); font-variant-numeric:tabular-nums; font-weight:700}
+
+.footnote{margin-top:54px; padding-top:20px; border-top:1px solid var(--line); font-size:.85rem; color:var(--muted); max-width:68ch}
+.footnote b{color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+</style>
+</head>
+<body>
+<div class="rtl"><div class="wrap">
+<header class="masthead">
+  <h1>آیین دادرسی مدنی <em>۲</em></h1>
+  <div class="stamp">
+    دادرسی، ادله، تأمین و اجرا<br>
+    <b>۳۱ سؤال</b> از آزمون‌های <b>۱۳۹۸ تا ۱۴۰۴</b>
+  </div>
+</header>
+
+<p class="lede">
+  این واحد در هفت آزمون <strong>۳۱ سؤال</strong> داشته و تقریباً همه‌شان دور <strong>چهار موضوع</strong> می‌چرخند:
+  اجرای احکام، تأمین خواسته، دستور موقت، و اعسار. اگر همین چهار تا را ببندی، عملاً کل واحد را زده‌ای.
+</p>
+
+<nav class="toc" aria-label="فهرست">
+  <ul>
+    <li><a href="#map">نقشه واحد</a></li>
+    <li><a href="#salese">مالِ دستِ ثالث</a></li>
+    <li><a href="#ejra">اجرای احکام</a></li>
+    <li><a href="#tamin">تأمین خواسته</a></li>
+    <li><a href="#dastoor">دستور موقت</a></li>
+    <li><a href="#esar">اعسار</a></li>
+    <li><a href="#adle">ادله</a></li>
+    <li><a href="#all">هر ۳۱ سؤال</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ نقشه ═══ -->
+<section id="map">
+  <div class="sec-head"><span class="sec-num">۰۱</span><h2>نقشهٔ واحد</h2></div>
+  <p class="sec-sub">۳۱ سؤال، این‌طور پخش شده‌اند:</p>
+  <div class="freq">
+    <div class="freq-row"><span class="freq-name">اجرای احکام</span><div class="bar"><i style="width:100%"></i></div><span class="freq-n">۱۱</span></div>
+    <div class="freq-row"><span class="freq-name">دستور موقت</span><div class="bar"><i style="width:55%"></i></div><span class="freq-n">۶</span></div>
+    <div class="freq-row"><span class="freq-name">ادله (شهادت، سند، کارشناسی)</span><div class="bar"><i style="width:45%"></i></div><span class="freq-n">۵</span></div>
+    <div class="freq-row"><span class="freq-name">تأمین خواسته</span><div class="bar"><i style="width:36%"></i></div><span class="freq-n">۴</span></div>
+    <div class="freq-row"><span class="freq-name">اعسار</span><div class="bar"><i style="width:27%"></i></div><span class="freq-n">۳</span></div>
+    <div class="freq-row"><span class="freq-name">حکم غیابی</span><div class="bar"><i style="width:9%"></i></div><span class="freq-n">۱</span></div>
+  </div>
+</section>
+
+<!-- ═══ مال دست ثالث ═══ -->
+<section id="salese">
+  <div class="sec-head"><span class="sec-num">۰۲</span><h2>مالِ دستِ ثالث</h2></div>
+  <p class="sec-sub">
+    مهم‌ترین چیز در این واحد. سه ماده که خیلی شبیه‌اند و طراح مدام جابه‌جایشان می‌کند —
+    و هر سه جواب متفاوتی دارند. هر سه هم تست شده‌اند.
+  </p>
+
+  <div class="trick">
+    <p class="say">«۶۱ حرف، ۴۴ دلیل، ۱۴۶ سند.»</p>
+    <p class="why">
+      هر سه ماده دربارهٔ مالی‌اند که دستِ یک نفر سوم است، ولی <b>سختگیری‌شان پلکانی بالا می‌رود</b>:<br>
+      ماده <b>۶۱</b> ← فقط <b>حرف</b> بزند (ادعای مالکیت) کافی است<br>
+      ماده <b>۴۴</b> ← باید <b>دلیل</b> هم بیاورد<br>
+      ماده <b>۱۴۶</b> ← باید <b>سند رسمی یا حکم قطعیِ مقدم بر توقیف</b> بیاورد
+    </p>
+  </div>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>ماده</th><th>موضوعش چیست</th><th>ثالث چه باید بکند</th><th>نتیجه</th><th>سؤال</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="num">۶۱</td>
+          <td class="topic">مال <b>منقولی</b> که می‌خواهند بازداشت کنند</td>
+          <td>فقط ادعای مالکیت کند — <b>دلیل لازم نیست</b></td>
+          <td>بازداشت <b>نمی‌شود</b></td>
+          <td><span class="q">۱۴۰۲-۳۳</span></td>
+        </tr>
+        <tr>
+          <td class="num">۴۴</td>
+          <td class="topic"><b>عینِ محکومٌ‌به</b> در تصرف اوست</td>
+          <td>مدعی حق از عین یا منافع باشد <b>و دلیل ارائه کند</b></td>
+          <td>اجرا متوقف نمی‌شود؛ <b>یک هفته</b> مهلت مراجعه به دادگاه + <b>۱۵ روز</b> برای آوردن قرار تأخیر</td>
+          <td><span class="q">۱۴۰۲-۲۲</span></td>
+        </tr>
+        <tr>
+          <td class="num">۱۴۶</td>
+          <td class="topic">مالی که <b>قبلاً توقیف شده</b></td>
+          <td><b>حکم قطعی یا سند رسمیِ مقدم بر توقیف</b> بیاورد</td>
+          <td>توقیف <b>بدون نیاز به دعوا</b> رفع می‌شود</td>
+          <td><span class="q">۱۴۰۲-۲۵</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sec-sub" style="margin-top:14px">
+    و اگر سند رسمیِ مقدم نداشت؟ آن‌وقت باید <b>شکایت ثالثِ اجرایی</b> بدهد — که بدون تشریفات آیین دادرسی و
+    بدون هزینهٔ دادرسی رسیدگی می‌شود <span class="art">م ۱۴۷</span>.
+  </p>
+</section>
+
+<!-- ═══ اجرا ═══ -->
+<section id="ejra">
+  <div class="sec-head"><span class="sec-num">۰۳</span><h2>اجرای احکام</h2></div>
+  <p class="sec-sub">۱۱ سؤال از ۳۱ — بزرگ‌ترین بخش این واحد.</p>
+
+  <ul class="points">
+    <li>بعد از ابلاغ اجرائیه، محکومٌ‌علیه <b>ده روز</b> وقت دارد اجرا کند، ترتیب پرداخت بدهد، یا مالی معرفی کند. <span class="art">م ۳۴</span> <span class="q">۱۳۹۸-۲۵</span></li>
+    <li>مزایدهٔ نوبت اول خریدار نداشت ← محکومٌ‌له می‌تواند <b>تجدید مزایده</b> بخواهد، و آنجا مال <b>به هر مبلغی</b> که خریدار پیدا کند فروخته می‌شود. <span class="art">م ۱۳۱</span> <span class="q">۱۴۰۲-۲۷</span></li>
+    <li>دادگاه صحت مزایده را تأیید کرد؟ باز هم <b>دعوای ابطال مزایده قابل استماع است</b>. <span class="art">م ۱۴۳ + رأی وحدت رویه ۸۴۵</span> <span class="q">۱۴۰۳-۲۳</span></li>
+    <li>اشتباه در اجرائیه: دادگاه <b>هم رأساً و هم به درخواست طرفین</b> ابطال یا تصحیح می‌کند — هر دو با هم. <span class="art">م ۱۱</span> <span class="q">۱۴۰۲-۲۸</span></li>
+    <li>مفاد حکم مبهم است؟ رفع ابهام با <b>دادگاه صادرکنندهٔ حکم</b> است — نه با اجرای احکام، نه رأی تصحیحی. <span class="art">م ۲۷</span> <span class="q">۱۴۰۳-۲۱</span></li>
+    <li>شناسایی و توقیف اموال محکومٌ‌علیه با <b>مرجع اجراکنندهٔ رأی</b> است: قسمت اجرای دادگاه صادرکنندهٔ اجرائیه یا مجری نیابت. <span class="art">م ۱۹ نحوه اجرای محکومیت‌های مالی</span> <span class="q">۱۴۰۲-۲۴</span></li>
+    <li><b>گزارش اصلاحی</b> مثل حکم اجرا می‌شود؛ اجرائیه‌اش را <b>دادگاه نخستین</b> صادر می‌کند — حتی اگر سازش در تجدیدنظر بوده باشد — و <b>حق‌الاجرا هم می‌تواند تعلق بگیرد</b>. <span class="q">۱۴۰۲-۳۰</span></li>
+    <li>حکم دادگاه خارجی راجع به <b>مال غیرمنقول واقع در ایران</b>: <b>مطلقاً</b> قابل اجرا نیست. <span class="art">م ۱۶۹</span> <span class="q">۱۳۹۸-۲۹</span></li>
+    <li>حکم غیابی وقتی <b>بدون تأمین</b> اجرا می‌شود که دادنامه یا اجرائیه <b>ابلاغ واقعی</b> شده باشد. <span class="art">تبصره ۲ م ۳۰۶</span> <span class="q">۱۳۹۸-۲۴</span></li>
+  </ul>
+</section>
+
+<!-- ═══ تأمین خواسته ═══ -->
+<section id="tamin">
+  <div class="sec-head"><span class="sec-num">۰۴</span><h2>تأمین خواسته</h2></div>
+  <p class="sec-sub">۴ سؤال، و هر چهار تا روی یک منطق سوارند.</p>
+
+  <div class="trick">
+    <p class="say">«باید غافلگیر کند.»</p>
+    <p class="why">
+      کل فلسفهٔ تأمین خواسته همین است — اگر خوانده خبردار شود، مال را جابه‌جا می‌کند. پس:<br>
+      برای رسیدگی به درخواست، <b>به خوانده اخطار نمی‌شود</b> <span class="art">م ۱۱۵</span><br>
+      ولی بعد از صدور، قرار <b>حتماً به او ابلاغ می‌شود</b> تا بتواند اعتراض کند <span class="art">م ۱۱۷</span><br>
+      <span style="color:var(--ink-2)">همین «نه قبل، آری بعد» جواب سؤال ۱۴۰۱-۳۱ بود.</span>
+    </p>
+  </div>
+
+  <ul class="points">
+    <li>تأمین خواسته <b>خواستهٔ معلوم</b> می‌خواهد. سودِ ده سالِ کارخانه که باید با کارشناسی معیّن شود، هنوز معلوم نیست ← قرار صادر نمی‌شود. <span class="art">م ۱۰۸ و ۱۱۳</span> <span class="q">۱۴۰۳-۲۸</span></li>
+    <li>قاعدهٔ کلیِ <b>تبدیل</b> مال توقیف‌شده این است که جایگزین از نظر قیمت و سهولت فروش کمتر نباشد — <b>ولی</b> اگر خودِ <b>عینِ خواسته</b> توقیف شده باشد، تبدیل فقط <b>با موافقت خواهان</b> ممکن است. <span class="art">م ۱۲۴</span> <span class="q">۱۳۹۸-۲۸</span></li>
+    <li>باغ خوانده معرفی شد؟ <b>تمام سهم او از عین</b> توقیف می‌شود. کسرهای یک‌چهارم و یک‌سوم مالِ <b>حقوق و مزایای مستخدمان</b> است، نه املاک. <span class="q">۱۳۹۹-۲۹</span></li>
+  </ul>
+</section>
+
+<!-- ═══ دستور موقت ═══ -->
+<section id="dastoor">
+  <div class="sec-head"><span class="sec-num">۰۵</span><h2>دستور موقت</h2></div>
+  <p class="sec-sub">۶ سؤال — سه تا در دادگاه، سه تا در دیوان عدالت اداری.</p>
+
+  <div class="trick">
+    <p class="say">«نباید کار دعوا را تمام کند.»</p>
+    <p class="why">
+      دستور موقت <b>نباید نتیجهٔ دعوای اصلی را از پیش محقق کند</b>. برای همین در دعوای <b>خلع ید</b>،
+      دستور موقتِ «رفع تصرف» صادر نمی‌شود — چون همان خواستهٔ اصلی است.<br>
+      ولی در دعوای تصرف زمین کشاورزی، «<b>منع از شخم زدن</b>» می‌شود، چون دستور موقت می‌تواند
+      <b>منع از امری</b> باشد <span class="art">م ۳۱۶</span> و نتیجهٔ دعوا را هم تمام نمی‌کند.
+      <span class="q">۱۴۰۲-۳۵</span> <span class="q">۱۴۰۴-۲۵</span>
+    </p>
+  </div>
+
+  <ul class="points">
+    <li>طرف مقابل با سپردن <b>تأمین متناسب</b> می‌تواند رفع اثر از دستور موقت را بخواهد. <span class="art">م ۳۲۱</span> <span class="q">۱۴۰۴-۲۵</span></li>
+    <li>دستور موقتی که مال را از <b>نقل و انتقال</b> بازداشته، تا وقتی برقرار است مانع <b>فروش اجرایی</b> همان مال می‌شود؛ تأمین خواستهٔ بعدی این مانع را برنمی‌دارد. <span class="q">۱۴۰۱-۲۲</span></li>
+    <li><b>خانواده:</b> در ملاقات فرزند، دستور موقت <b>بدون اخذ تأمین</b> صادر و <b>بدون تأیید رئیس حوزه قضایی</b> اجرا می‌شود. <span class="art">م ۷ حمایت خانواده</span> <span class="q">۱۴۰۳-۲۵</span></li>
+    <li><b>خانواده:</b> اگر ظرف <b>شش ماه</b> دربارهٔ اصل دعوا تصمیمی گرفته نشود، دستور موقت <b>خودبه‌خود ملغی</b> می‌شود؛ صدور دستور تازه ممکن است. <span class="art">م ۷ حمایت خانواده</span> <span class="q">۱۴۰۴-۳۹</span></li>
+    <li><b>دیوان عدالت:</b> درخواست دستور موقت را می‌شود همراه شکایت یا هر وقت پس از آن <b>تا قبل از ختم رسیدگی</b> داد. <span class="q">۱۴۰۰-۳۹</span></li>
+    <li><b>دیوان، هیئت عمومی:</b> اگر ضمن دادخواست ابطال مصوبه دستور موقت هم خواسته شده، رسیدگی به آن با <b>رئیس هیئت تخصصیِ مربوط</b> و در غیابش با نایب‌رئیس همان هیئت است. <span class="q">۱۴۰۳-۲۲</span></li>
+  </ul>
+</section>
+
+<!-- ═══ اعسار ═══ -->
+<section id="esar">
+  <div class="sec-head"><span class="sec-num">۰۶</span><h2>اعسار</h2></div>
+  <p class="sec-sub">۳ سؤال، و همه‌شان سرِ یک چیز: <b>بارِ اثبات با کیست؟</b></p>
+
+  <div class="trick">
+    <p class="say">«چیزی گرفتی؟ خودت ثابت کن.»</p>
+    <p class="why">
+      قاعدهٔ ماده ۷ قانون نحوهٔ اجرای محکومیت‌های مالی، سرِ یک سؤال می‌چرخد:
+      <b>مدیون در برابر دین، مالی گرفته یا نه؟</b><br>
+      <b>گرفته</b> (مثل وام، ثمن معامله) ← بارِ اثبات اعسار روی <b>خودِ اوست</b><br>
+      <b>نگرفته</b> و ملائت فعلی یا سابقش هم ثابت نیست (مثل <b>مهریه</b>) ← ادعای اعسارش با <b>سوگند خودش</b> پذیرفته می‌شود، و هرکه مدعی ملائت اوست باید ثابت کند
+      <span class="q">۱۴۰۰-۳۸</span> <span class="q">۱۴۰۴-۳۷</span>
+    </p>
+  </div>
+
+  <ul class="points">
+    <li>مرجع طرح دعوای اعسار: <b>همان دادگاه بدوی</b> که در حال رسیدگی به دعوای اصلی است یا اول به آن رسیدگی کرده. <span class="q">۱۳۹۹-۲۳</span></li>
+    <li>اعسار از <b>هزینهٔ دادرسی</b> را می‌شود همان وسط رسیدگی مطرح کرد؛ لازم نیست منتظر حکم قطعی بمانی.</li>
+  </ul>
+</section>
+
+<!-- ═══ ادله ═══ -->
+<section id="adle">
+  <div class="sec-head"><span class="sec-num">۰۷</span><h2>ادله</h2></div>
+  <p class="sec-sub">۵ سؤال — بیشترشان دربارهٔ اینکه <b>هزینه با کیست</b> و <b>بارِ اثبات با کیست</b>.</p>
+
+  <div class="trick">
+    <p class="say">«هرکه سند را آورد، اصالتش هم با اوست.»</p>
+    <p class="why">
+      خوانده سند عادی داد و خواهان انکار کرد؟ چون <b>ابرازکنندهٔ سند خوانده است</b>،
+      اثبات اصالت و <b>هزینهٔ کارشناسی</b> هم با خودِ اوست. <span class="art">م ۲۱۷ و ۲۲۰</span>
+      <span class="q">۱۳۹۹-۳۴</span>
+    </p>
+  </div>
+
+  <ul class="points">
+    <li>حتی وقتی <b>دادگاه خودش رأساً</b> قرار تحقیق محلی می‌دهد، تهیهٔ وسیلهٔ اجرا در مرحلهٔ بدوی با <b>خواهان</b> است؛ ندهد و دادگاه بدون آن نتواند رأی دهد ← <b>قرار ابطال دادخواست</b>. <span class="art">م ۲۵۶</span> <span class="q">۱۳۹۸-۳۲</span></li>
+    <li>گواه در حوزهٔ دادگاه دیگری ساکن است؟ دادگاه می‌تواند استماع گواهی او را به <b>همان دادگاه محل اقامتش نیابت</b> بدهد. <span class="q">۱۴۰۳-۳۹</span></li>
+    <li><b>جرح شاهد:</b> جهات جرح باید <b>در زمان ادای شهادت</b> وجود داشته باشد. اگر معلوم نباشد آن موقع هم بوده یا بعداً پیدا شده، نه رأی نقض می‌شود و نه از شهود خسارت گرفته می‌شود. <span class="art">م ۲۳۴ و ۲۳۵</span> <span class="q">۱۴۰۱-۳۰</span></li>
+    <li>دور نگه داشتن شهودی که شهادت داده‌اند، و تحقیق گروهی از شهود — <b>هر دو اختیاری</b>‌اند و به تشخیص دادگاه. <span class="q">۱۴۰۱-۳۲</span></li>
+  </ul>
+</section>
+
+<!-- ═══ همه سؤالات ═══ -->
+<section id="all">
+  <div class="sec-head"><span class="sec-num">۰۸</span><h2>هر ۳۱ سؤال</h2></div>
+  <p class="sec-sub">تا بتوانی در برنامه پیدایشان کنی و بزنی‌شان. ⚠ یعنی کلید دفترچه با متن قانون تنش دارد.</p>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>سؤال</th><th>موضوع</th><th>گزینهٔ درست</th></tr></thead>
+      <tbody>
+        <tr><td class="num">۱۳۹۸-۲۴</td><td class="topic">اجرای حکم غیابی با ابلاغ واقعی</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۳۹۸-۲۵</td><td class="topic">مهلت اجرای اجرائیه</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۳۹۸-۲۸</td><td class="topic">تبدیل عین خواستهٔ توقیف‌شده</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۳۹۸-۲۹</td><td class="topic">حکم خارجی راجع به غیرمنقولِ ایران</td><td class="num">۳</td></tr>
+        <tr><td class="num">۱۳۹۸-۳۲</td><td class="topic">هزینهٔ قرار تحقیق محلیِ رأساً</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۳۹۹-۲۳</td><td class="topic">مرجع طرح دعوای اعسار</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۳۹۹-۲۹</td><td class="topic">توقیف باغ در تأمین خواسته</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۳۹۹-۳۴</td><td class="topic">انکار سند عادی و هزینهٔ کارشناسی</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۰-۳۸ ⚠</td><td class="topic">بار اثبات اعسار در مهریه</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۴۰۰-۳۹ ⚠</td><td class="topic">زمان درخواست دستور موقت در دیوان</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۱-۲۲ ⚠</td><td class="topic">تزاحم دستور موقت و تأمین خواسته</td><td class="num">۳</td></tr>
+        <tr><td class="num">۱۴۰۱-۳۰ ⚠</td><td class="topic">جرح شاهد پس از صدور رأی</td><td class="num">۱</td></tr>
+        <tr><td class="num">۱۴۰۱-۳۱ ⚠</td><td class="topic">اخطار و ابلاغ در تأمین خواسته</td><td class="num">۳</td></tr>
+        <tr><td class="num">۱۴۰۱-۳۲ ⚠</td><td class="topic">شیوهٔ استماع شهادت</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۴۰۲-۲۲</td><td class="topic">عین محکومٌ‌به دستِ ثالث</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۲-۲۴</td><td class="topic">مرجع شناسایی و توقیف اموال</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۲-۲۵</td><td class="topic">سند رسمیِ مقدم بر توقیف</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۴۰۲-۲۷</td><td class="topic">مزایدهٔ بی‌خریدار</td><td class="num">۱</td></tr>
+        <tr><td class="num">۱۴۰۲-۲۸</td><td class="topic">اشتباه در اجرائیه</td><td class="num">۳</td></tr>
+        <tr><td class="num">۱۴۰۲-۳۰</td><td class="topic">اجرای گزارش اصلاحی</td><td class="num">۳</td></tr>
+        <tr><td class="num">۱۴۰۲-۳۳</td><td class="topic">مال منقول دستِ ثالث</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۲-۳۵</td><td class="topic">دستور موقت در دعوای خلع ید</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۴۰۳-۲۱</td><td class="topic">رفع ابهام از حکم</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۴۰۳-۲۲ ⚠</td><td class="topic">دستور موقت در هیئت عمومی دیوان</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۳-۲۳</td><td class="topic">ابطال مزایده پس از تأیید</td><td class="num">۱</td></tr>
+        <tr><td class="num">۱۴۰۳-۲۵</td><td class="topic">دستور موقت ملاقات فرزند</td><td class="num">۲</td></tr>
+        <tr><td class="num">۱۴۰۳-۲۸</td><td class="topic">تأمین خواسته با خواستهٔ نامعلوم</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۳-۳۹</td><td class="topic">گواه ساکن حوزهٔ دیگر</td><td class="num">۳</td></tr>
+        <tr><td class="num">۱۴۰۴-۲۵</td><td class="topic">دستور موقتِ منع از امری</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۴-۳۷</td><td class="topic">اثبات اعسار از محکومٌ‌به</td><td class="num">۴</td></tr>
+        <tr><td class="num">۱۴۰۴-۳۹</td><td class="topic">مهلت شش‌ماههٔ دستور موقت خانواده</td><td class="num">۲</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p class="footnote">
+  <b>از کجا آمده:</b> ۳۱ سؤالِ واحد «آیین دادرسی مدنی ۲ — دادرسی، ادله، تأمین و اجرا» در آزمون‌های ۱۳۹۸ تا ۱۴۰۴
+  مرکز وکلا، تطبیق‌داده‌شده با متن روزآمد قوانین.
+  <br><br>
+  <b>هفت سؤال</b> نشان ⚠ دارند: آنجا کلید رسمی دفترچه با متن قانون یا تحلیل حقوقی تنش دارد و بهتر است با
+  حقوق‌دان چک شود. اینجا کلید دفترچه را نوشته‌ام، دست‌نخورده.
+</p>
+
+</div></div>
+<a href="adm.html" style="position:fixed;bottom:18px;left:18px;z-index:50;background:var(--accent);color:#fff;text-decoration:none;padding:9px 16px;border-radius:3px;font-size:.85rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.2)">→ برگه کامل آ.د.م</a>
+
+</body>
+</html>
