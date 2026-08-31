@@ -27,10 +27,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 SRC = SITE / "bank.json"
+SRC_KANOON = SITE / "bank-kanoon.json"
 OUT = SITE / "data"
 
 # فیلدهایی که در مسیر آزمون لازم‌اند
 QUIZ_FIELDS = ("id", "year", "q", "courseUnit", "answer", "questionText", "options", "sourcePages")
+# فیلدهای مخصوص سؤالات کانون: مبدأ و درجه اعتبار کلید
+KANOON_FIELDS = ("source", "keyTrust", "acceptedAnswers", "subjectName", "tags")
 
 # تحلیل‌های بازنویسی‌شده که روی نسخه قالبی قدیمی سوار می‌شوند
 REWRITTEN = SITE / "analyses"
@@ -67,6 +70,14 @@ def main() -> int:
         return 1
 
     bank = json.loads(SRC.read_text(encoding="utf-8"))
+    # سؤالات کانون شناسه پیشونددار دارند و با مرکز برخورد نمی‌کنند
+    kanoon = json.loads(SRC_KANOON.read_text(encoding="utf-8")) if SRC_KANOON.exists() else []
+    if kanoon:
+        clash = {q["id"] for q in bank} & {q["id"] for q in kanoon}
+        if clash:
+            print(f"::error::برخورد شناسه میان دو بانک: {sorted(clash)[:5]}")
+            return 1
+        bank = bank + kanoon
     if OUT.exists():
         shutil.rmtree(OUT)
 
@@ -90,6 +101,9 @@ def main() -> int:
             problems.append(f"{qid}: متن سؤال ندارد")
         if not row["sourcePages"]:
             row["sourcePages"] = [item["asset"]] if item.get("asset") else []
+        for f in KANOON_FIELDS:
+            if item.get(f) is not None:
+                row[f] = item[f]
         questions.append(row)
 
         new = rewritten.get(qid)
@@ -126,14 +140,15 @@ def main() -> int:
             }
             if v2.get("currentLawNote"):
                 entry["changeNote"] = v2["currentLawNote"]
-        review_by_year.setdefault(int(item["year"]), {})[qid] = entry
+        bucket = ("k" if item.get("source") == "kanoon" else "") + str(int(item["year"]))
+        review_by_year.setdefault(bucket, {})[qid] = entry
 
     if problems:
         for p in problems[:20]:
             print(f"::error::{p}")
         return 1
 
-    questions.sort(key=lambda r: (int(r["year"]), int(r["q"])))
+    questions.sort(key=lambda r: (r.get("source", "markaz"), int(r["year"]), int(r["q"])))
 
     total = jdump(OUT / "questions.json", questions)
     print(f"data/questions.json           {total/1024:7.0f} KB  ({len(questions)} سؤال)")
@@ -145,14 +160,25 @@ def main() -> int:
         print(f"data/review/{year}.json          {size/1024:7.0f} KB")
 
     rewritten_ids = [q["id"] for q in questions if q["id"] in rewritten]
-    units = Counter(r["courseUnit"] for r in questions)
-    years = Counter(int(r["year"]) for r in questions)
+    markaz = [r for r in questions if r.get("source") != "kanoon"]
+    kanoonq = [r for r in questions if r.get("source") == "kanoon"]
+
+    def counts(rows):
+        y = Counter(int(r["year"]) for r in rows)
+        u = Counter(r["courseUnit"] for r in rows)
+        return {"total": len(rows),
+                "years": {str(k): y[k] for k in sorted(y)},
+                "units": dict(sorted(u.items()))}
+
+    units = Counter(r["courseUnit"] for r in markaz)
+    years = Counter(int(r["year"]) for r in markaz)
     jdump(OUT / "meta.json", {
-        "total": len(questions),
+        "total": len(markaz),
         "years": {str(y): years[y] for y in sorted(years)},
         "units": dict(sorted(units.items())),
         "rewritten": len(rewritten_ids),
         "keyChanged": len(changed_keys),
+        "kanoon": counts(kanoonq) if kanoonq else None,
     })
 
     print(f"\nبارگذاری اولیه: {total/1024:.0f} KB "

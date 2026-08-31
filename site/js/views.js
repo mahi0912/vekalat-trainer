@@ -1,11 +1,12 @@
 /** ساخت HTML صفحه‌ها. هیچ نمایی مستقیماً به داده دست نمی‌زند؛ همه چیز پارامتر می‌گیرد. */
 import { esc, fa, pct } from './util.js';
-import { COURSE_GROUPS, YEARS } from './groups.js';
+import { COURSE_GROUPS, YEARS, KANOON_SUBJECTS, KANOON_YEARS, KEY_TRUST } from './groups.js';
 import { insights, keyOf, PENALTY } from './state.js';
 
 /* ---------- خانه ---------- */
 
 export function home({ meta, unitCounts, resume, mistakes }) {
+  const kn = meta.kanoon;
   const years = YEARS.map(y =>
     `<button type="button" class="btn" data-year="${y}">
        <span class="unit">آزمون جامع ${fa(y)}</span>
@@ -40,9 +41,31 @@ export function home({ meta, unitCounts, resume, mistakes }) {
       </div>
     </div>` : '';
 
+  const kanoonCard = kn ? `
+    <div class="card">
+      <h2>آزمون کانون وکلای دادگستری</h2>
+      <p class="muted" style="margin:4px 0 12px">${fa(kn.total)} سؤال از ${fa(Object.keys(kn.years).length)} دوره. جدا از بانک مرکز نگه داشته شده‌اند؛ کلید بعضی سال‌ها رسمی و بعضی پیشنهادی است.</p>
+      <div class="grid">
+        ${KANOON_YEARS.filter(y => kn.years[y]).map(y =>
+          `<button type="button" class="btn" data-kyear="${y}">
+             <span class="unit">کانون ${fa(y)}</span>
+             <span class="count">${fa(kn.years[y])} سؤال</span>
+           </button>`).join('')}
+      </div>
+      <h2 style="margin-top:20px;font-size:1rem">تمرین موضوعی کانون</h2>
+      <div class="grid" style="margin-top:10px">
+        ${KANOON_SUBJECTS.filter(u => kn.units[u]).map(u =>
+          `<button type="button" class="btn" data-ksubject="${esc(u)}">
+             <span class="unit">${esc(u)}</span>
+             <span class="count">${fa(kn.units[u])} سؤال</span>
+           </button>`).join('')}
+      </div>
+    </div>` : '';
+
   return `
     ${resumeCard}
     ${mistakeCard}
+    ${kanoonCard}
     <div class="card">
       <div class="hero">
         <div><b>${fa(meta.total)}</b><small>سؤال واقعی</small></div>
@@ -106,6 +129,15 @@ export function picker(title, total) {
 
 /* ---------- آزمون ---------- */
 
+/** نشان درجه اعتبار کلید — فقط برای سؤالات کانون که کلیدشان همیشه رسمی نیست. */
+function trustPill(q) {
+  const t = KEY_TRUST[q.keyTrust];
+  if (!t) return '';
+  const [label, kind] = t;
+  if (kind === 'good') return '';           // کلید رسمی نیازی به هشدار ندارد
+  return `<span class="pill" style="background:var(--warn-soft);color:var(--warn)">${esc(label)}</span>`;
+}
+
 const sourceBlock = q => `
   <div class="src-body">
     <p class="muted" style="margin:0 0 10px">صفحات مجاور هم نمایش داده می‌شوند تا سؤال‌های ابتدای و انتهای صفحه کامل دیده شوند.</p>
@@ -127,6 +159,8 @@ export function exam(q, { index, total, picked, flagged, answered, elapsed }) {
     <div class="card">
       <div class="qhead">
         <span class="pill accent">${esc(q.courseUnit)}</span>
+        ${q.source === 'kanoon' ? `<span class="pill">کانون وکلا</span>` : ''}
+        ${trustPill(q)}
         <span class="pill">سال ${fa(q.year)}</span>
         <span class="pill">سؤال دفترچه ${fa(q.q)}</span>
         <span class="pill" style="margin-inline-start:auto">⏱ ${esc(elapsed)}</span>

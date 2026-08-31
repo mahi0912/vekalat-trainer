@@ -50,6 +50,16 @@ function goHome() {
   app.innerHTML = view.home({ meta, unitCounts, resume, mistakes: mistakes.count() });
   on(app, '[data-year]', 'click', e => startYear(+e.currentTarget.dataset.year));
   on(app, '[data-subject]', 'click', e => showSubject(+e.currentTarget.dataset.subject));
+  on(app, '[data-kyear]', 'click', e => {
+    const y = +e.currentTarget.dataset.kyear;
+    askCount(all().filter(q => q.source === 'kanoon' && +q.year === y).sort((a, b) => a.q - b.q),
+             `کانون وکلا ${fa(y)}`, 'kanoon-year');
+  });
+  on(app, '[data-ksubject]', 'click', e => {
+    const u = e.currentTarget.dataset.ksubject;
+    askCount(all().filter(q => q.source === 'kanoon' && q.courseUnit === u)
+               .sort((a, b) => (a.year - b.year) || (a.q - b.q)), `${u} — کانون`, 'kanoon-unit');
+  });
   if (resume) {
     $('#resumeBtn').addEventListener('click', () => { s = resume; renderExam(); });
     $('#dropBtn').addEventListener('click', () => { session.clear(); goHome(); });
@@ -69,7 +79,7 @@ function showSubject(gi) {
   $('#backHome').addEventListener('click', goHome);
   on(app, '[data-unit]', 'click', e => {
     const unit = COURSE_GROUPS[gi][1][+e.currentTarget.dataset.unit];
-    askCount(all().filter(q => q.courseUnit === unit)
+    askCount(all().filter(q => q.source !== 'kanoon' && q.courseUnit === unit)
                .sort((a, b) => (a.year - b.year) || (a.q - b.q)), unit, 'unit');
   });
   toTop();
@@ -78,7 +88,7 @@ function showSubject(gi) {
 const all = () => [...byId.values()];
 
 const startYear = y => askCount(
-  all().filter(q => +q.year === y).sort((a, b) => a.q - b.q),
+  all().filter(q => q.source !== 'kanoon' && +q.year === y).sort((a, b) => a.q - b.q),
   `آزمون جامع ${fa(y)}`, 'year');
 
 /** سؤال‌های اشتباه‌زده‌شده، تازه‌ترین اول. */

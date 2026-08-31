@@ -20,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 DATA = SITE / "data"
+EXPECTED_MARKAZ = 910   # بانک مرکز وکلا — این عدد نباید تغییر کند
 EXPECTED_TOTAL = 910
 
 errors: list[str] = []
@@ -54,10 +55,21 @@ def main() -> int:
     questions = json.loads(questions_file.read_text(encoding="utf-8"))
     meta = json.loads((DATA / "meta.json").read_text(encoding="utf-8"))
 
-    if len(questions) != EXPECTED_TOTAL:
-        fail(f"تعداد سؤالات {len(questions)} است، انتظار {EXPECTED_TOTAL}")
-    if meta.get("total") != len(questions):
-        fail("meta.json با questions.json هم‌خوان نیست")
+    markaz = [q for q in questions if q.get("source") != "kanoon"]
+    kanoon = [q for q in questions if q.get("source") == "kanoon"]
+    if len(markaz) != EXPECTED_MARKAZ:
+        fail(f"سؤالات مرکز {len(markaz)} است، انتظار {EXPECTED_MARKAZ}")
+    if meta.get("total") != len(markaz):
+        fail("meta.json با شمار سؤالات مرکز هم‌خوان نیست")
+    if kanoon and (meta.get("kanoon") or {}).get("total") != len(kanoon):
+        fail("شمار سؤالات کانون در meta.json هم‌خوان نیست")
+    # هیچ شناسه کانونی نباید بدون پیشوند باشد و برعکس
+    for q in kanoon:
+        if not q["id"].startswith("k"):
+            fail(f"سؤال کانون بدون پیشوند: {q['id']}")
+    for q in markaz:
+        if q["id"].startswith("k"):
+            fail(f"سؤال مرکز با پیشوند کانون: {q['id']}")
 
     by_id = {q.get("id"): q for q in questions}
     rewritten_count = [0]
@@ -85,18 +97,19 @@ def main() -> int:
             fail(f"سؤال {tag}: واحد درسی ندارد")
 
         pages = q.get("sourcePages") or []
-        if not pages:
+        if not pages and q.get("source") != "kanoon":
             fail(f"سؤال {tag}: تصویر منبع ندارد")
         for p in pages:
             if not (SITE / p).exists():
                 missing_assets.add(p)
 
-        by_year.setdefault(int(q["year"]), []).append(q["id"])
+        bucket = ("k" if q.get("source") == "kanoon" else "") + str(int(q["year"]))
+        by_year.setdefault(bucket, []).append(q["id"])
 
     for year, ids in sorted(by_year.items()):
         path = DATA / "review" / f"{year}.json"
         if not path.exists():
-            fail(f"تحلیل‌های سال {year} ساخته نشده است")
+            fail(f"تحلیل‌های {year} ساخته نشده است")
             continue
         analyses = json.loads(path.read_text(encoding="utf-8"))
         for qid in ids:
