@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دو قانونی که جزوه ندارد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Noto+Naskh+Arabic:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ground:#EFF3F1; --surface:#FFFFFF; --surface-2:#F7FAF8;
+  --ink:#131E1C; --ink-2:#3D4E4A; --muted:#6A7B77;
+  --line:#D7E0DC; --line-2:#C2CFCA;
+  --accent:#0E6B5C; --accent-soft:#DDEDE8; --accent-ink:#0A5145;
+  --alert:#9E3226; --alert-soft:#F7E4E1;
+  --gold:#7E6218; --gold-soft:#F5EDD8; --gold-line:#DCC98A;
+  --shadow:0 1px 2px rgba(19,30,28,.05), 0 8px 24px -12px rgba(19,30,28,.15);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1413; --surface:#15201D; --surface-2:#1B2723;
+    --ink:#E2EBE7; --ink-2:#B4C4BF; --muted:#849791;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#48BBA6; --accent-soft:#14312B; --accent-ink:#7FD6C4;
+    --alert:#E8806E; --alert-soft:#331915;
+    --gold:#D9B860; --gold-soft:#2A2413; --gold-line:#5A4C24;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1413; --surface:#15201D; --surface-2:#1B2723;
+  --ink:#E2EBE7; --ink-2:#B4C4BF; --muted:#849791;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#48BBA6; --accent-soft:#14312B; --accent-ink:#7FD6C4;
+  --alert:#E8806E; --alert-soft:#331915;
+  --gold:#D9B860; --gold-soft:#2A2413; --gold-line:#5A4C24;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:'Vazirmatn', system-ui, sans-serif;
+  font-size:16.5px; line-height:1.85; font-weight:400;
+  -webkit-font-smoothing:antialiased;
+}
+.rtl{direction:rtl; text-align:right}
+.wrap{max-width:1020px; margin:0 auto; padding:0 20px 110px}
+
+.masthead{
+  border-bottom:2px solid var(--ink); margin-bottom:8px;
+  padding:52px 0 20px; display:flex; flex-wrap:wrap;
+  align-items:flex-end; gap:22px; justify-content:space-between;
+}
+.masthead h1{
+  margin:0; font-size:clamp(2rem,5.5vw,3.05rem); font-weight:900;
+  letter-spacing:-.02em; line-height:1.15; text-wrap:balance;
+}
+.masthead h1 em{font-style:normal; color:var(--accent)}
+.stamp{
+  font-size:.78rem; color:var(--muted); line-height:1.9;
+  border-right:2px solid var(--accent); padding-right:12px; max-width:30ch;
+}
+.stamp b{color:var(--ink-2); font-weight:700; font-variant-numeric:tabular-nums}
+.lede{font-size:1.05rem; color:var(--ink-2); max-width:64ch; margin:24px 0 38px}
+.lede strong{color:var(--ink); font-weight:700}
+
+nav.toc{
+  position:sticky; top:0; z-index:20; background:var(--ground);
+  border-bottom:1px solid var(--line); padding:10px 0; margin-bottom:42px;
+}
+nav.toc ul{list-style:none; margin:0; padding:0; display:flex; gap:6px; flex-wrap:wrap; font-size:.82rem}
+nav.toc a{display:block; padding:5px 11px; border-radius:2px; text-decoration:none; color:var(--ink-2); border:1px solid transparent; transition:.15s}
+nav.toc a:hover{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--line-2)}
+nav.toc a:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+section{margin:0 0 60px; scroll-margin-top:64px}
+.sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px; flex-wrap:wrap}
+.sec-num{font-size:.72rem; font-weight:700; color:var(--accent); letter-spacing:.14em;
+  border:1px solid var(--accent); border-radius:2px; padding:2px 7px; flex:none; font-variant-numeric:tabular-nums}
+h2{margin:0; font-size:clamp(1.35rem,3vw,1.7rem); font-weight:900; letter-spacing:-.015em; text-wrap:balance}
+.sec-sub{color:var(--muted); font-size:.93rem; margin:0 0 22px; max-width:62ch}
+
+/* ── ترفند حفظ ─────────────────────── */
+.trick{
+  background:var(--gold-soft); border:1px solid var(--gold-line);
+  border-radius:4px; padding:16px 18px 16px 18px; margin:18px 0;
+  position:relative;
+}
+.trick::before{
+  content:"ترفند حفظ"; position:absolute; top:-9px; right:16px;
+  background:var(--gold); color:var(--ground); font-size:.66rem; font-weight:700;
+  letter-spacing:.1em; padding:1px 9px; border-radius:2px;
+}
+.trick p{margin:0 0 8px; font-size:.96rem; line-height:1.85}
+.trick p:last-child{margin-bottom:0}
+.trick .say{
+  display:block; font-size:1.22rem; font-weight:900; color:var(--gold);
+  letter-spacing:-.01em; line-height:1.6; margin:4px 0 10px;
+}
+.trick .why{font-size:.88rem; color:var(--ink-2)}
+
+.tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--surface); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:560px; font-size:.93rem}
+thead th{background:var(--surface-2); text-align:right; font-weight:700; font-size:.78rem;
+  letter-spacing:.05em; color:var(--ink-2); padding:11px 15px; border-bottom:1.5px solid var(--line-2); white-space:nowrap}
+tbody td{padding:11px 15px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.75}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.num{font-weight:700; color:var(--gold); font-variant-numeric:tabular-nums; white-space:nowrap}
+td.topic{font-weight:600; width:34%}
+.art{font-size:.79rem; color:var(--accent-ink); background:var(--accent-soft); padding:1px 7px;
+  border-radius:2px; white-space:nowrap; font-weight:600; display:inline-block; font-variant-numeric:tabular-nums}
+.qs{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
+.q{font-size:.68rem; color:var(--muted); border:1px solid var(--line-2); padding:0 5px;
+  border-radius:2px; font-variant-numeric:tabular-nums; white-space:nowrap; line-height:1.7}
+
+.triggers{border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+.trig{display:grid; grid-template-columns:minmax(190px,36%) 1fr; border-bottom:1px solid var(--line)}
+.trig:last-child{border-bottom:none}
+.trig:hover{background:var(--surface-2)}
+.trig-if{padding:14px 16px; border-left:1px solid var(--line); background:var(--surface-2); font-weight:600; font-size:.94rem}
+.trig-if::before{content:"دیدی: "; color:var(--muted); font-weight:400; font-size:.8rem}
+.trig-then{padding:14px 16px; font-size:.94rem}
+.trig-then b{color:var(--accent-ink); font-weight:700}
+@media (max-width:640px){.trig{grid-template-columns:1fr}.trig-if{border-left:none; border-bottom:1px solid var(--line)}}
+
+.pairs{display:grid; gap:20px}
+.pair{border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+.pair-h{padding:11px 16px; background:var(--alert-soft); color:var(--alert); font-weight:700;
+  font-size:.93rem; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px}
+.pair-h::before{content:"دام"; font-size:.66rem; letter-spacing:.1em; font-weight:700;
+  border:1px solid currentColor; border-radius:2px; padding:1px 6px; flex:none}
+.pair-h.calm{background:var(--accent-soft); color:var(--accent-ink)}
+.pair-h.calm::before{content:"دسته‌بندی"}
+.pair-body{display:grid; grid-template-columns:1fr 1fr}
+.pair-col{padding:15px 17px; font-size:.92rem}
+.pair-col:first-child{border-left:1px solid var(--line)}
+.pair-col h4{margin:0 0 8px; font-size:.88rem; font-weight:800; color:var(--accent-ink)}
+.pair-col ul{margin:0; padding-right:16px}
+.pair-col li{margin-bottom:5px}
+.pair-key{grid-column:1/-1; padding:13px 17px; border-top:1px solid var(--line); background:var(--surface-2); font-size:.9rem; color:var(--ink-2)}
+.pair-key b{color:var(--ink); font-weight:700}
+@media (max-width:640px){.pair-body{grid-template-columns:1fr}.pair-col:first-child{border-left:none; border-bottom:1px solid var(--line)}}
+
+.statute{font-family:'Noto Naskh Arabic', serif; font-size:.95rem; line-height:2.1;
+  background:var(--surface-2); border-right:3px solid var(--accent); padding:12px 16px;
+  margin:14px 0; color:var(--ink-2); border-radius:0 3px 3px 0}
+.statute cite{display:block; font-family:'Vazirmatn',sans-serif; font-style:normal; font-size:.75rem; color:var(--muted); margin-top:6px}
+
+.points{list-style:none; margin:0; padding:0; display:grid; gap:11px}
+.points li{background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:13px 16px; font-size:.94rem; box-shadow:var(--shadow)}
+.points b{color:var(--accent-ink); font-weight:700}
+.points .no{color:var(--alert); font-weight:700}
+
+.tree{background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:6px 4px; box-shadow:var(--shadow)}
+.branch{border-bottom:1px solid var(--line); padding:12px 16px}
+.branch:last-child{border-bottom:none}
+.branch-q{font-weight:700; font-size:.95rem; margin-bottom:5px}
+.branch-a{font-size:.91rem; color:var(--ink-2); padding-right:14px; border-right:2px solid var(--accent-soft)}
+.branch-a b{color:var(--accent-ink)}
+
+.freq{display:grid; gap:5px}
+.freq-row{display:grid; grid-template-columns:minmax(148px,26%) 1fr 42px; align-items:center; gap:12px; font-size:.87rem}
+.freq-name{font-weight:600}
+.bar{height:16px; background:var(--accent-soft); border-radius:2px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--accent); border-radius:2px}
+.freq-n{text-align:left; color:var(--muted); font-variant-numeric:tabular-nums; font-weight:700}
+
+.footnote{margin-top:54px; padding-top:20px; border-top:1px solid var(--line); font-size:.85rem; color:var(--muted); max-width:68ch}
+.footnote b{color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+</style>
+</head>
+<body>
+<div class="rtl"><div class="wrap">
+<header class="masthead">
+  <h1>دو قانونی که <em>جزوه ندارد</em></h1>
+  <div class="stamp">
+    اجرای احکام مدنی · نحوهٔ اجرای محکومیت‌های مالی<br>
+    منبعِ <b>۴۷٪</b> سؤال‌های آ.د.م ۲
+  </div>
+</header>
+
+<p class="lede">
+  در واحد آ.د.م ۲، فقط <strong>۵۱٪</strong> سؤال‌ها از قانون آیین دادرسی مدنی می‌آید. <strong>۳۵٪</strong> از
+  قانون اجرای احکام مدنی و <strong>۱۲٪</strong> از نحوهٔ اجرای محکومیت‌های مالی. جزوه به اولی ۱۲۸ بار و
+  به دومی <strong>یک بار</strong> اشاره کرده. این برگه فقط همان شکاف را پر می‌کند — نه بیشتر.
+</p>
+
+<nav class="toc" aria-label="فهرست">
+  <ul>
+    <li><a href="#e1">اجرای احکام</a></li>
+    <li><a href="#e2">نیم‌عشر و توقیف حقوق</a></li>
+    <li><a href="#e3">مزایده</a></li>
+    <li><a href="#m1">محکومیت‌های مالی</a></li>
+    <li><a href="#m2">اعسار</a></li>
+    <li><a href="#m3">مستثنیات دین</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ اجرای احکام ═══ -->
+<section id="e1">
+  <div class="sec-head"><span class="sec-num">۰۱</span><h2>اجرای احکام: کدام دادگاه؟</h2></div>
+  <p class="sec-sub">چهار ماده که همه شبیه‌اند و طراح عاشقشان است. سه تایشان تست شده.</p>
+
+  <div class="trick">
+    <p class="say">«صدور با نخستین، اجرا با مجری، ابهام با صادرکننده.»</p>
+    <p class="why">
+      سه کار، سه دادگاه — و همین سه‌تایی است که سؤال می‌شود:<br>
+      <b>صدور اجرائیه</b> ← دادگاه نخستین، همیشه <span class="art">م ۵</span><br>
+      <b>اختلاف ناشی از اجرا</b> ← دادگاهی که حکم را <b>اجرا می‌کند</b> <span class="art">م ۲۶</span><br>
+      <b>رفع ابهام از حکم</b> ← دادگاهی که حکم را <b>صادر کرده</b> <span class="art">م ۲۷</span>
+    </p>
+  </div>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>ماده</th><th>حکم</th><th>سؤال</th></tr></thead>
+      <tbody>
+        <tr><td class="num">۵</td><td>صدور اجرائیه با <b>دادگاه نخستین</b> است — حتی وقتی سازش در تجدیدنظر انجام شده باشد.</td><td><span class="q">۱۴۰۲-۳۰</span></td></tr>
+        <tr><td class="num">۱۱</td><td>اشتباه در اجرائیه: دادگاه <b>هم رأساً و هم به درخواست هر یک از طرفین</b> می‌تواند ابطال یا تصحیح کند.</td><td><span class="q">۱۴۰۲-۲۸</span></td></tr>
+        <tr><td class="num">۲۶</td><td>اختلاف ناشی از اجرای احکام با دادگاهی است که <b>حکم توسط آن اجرا می‌شود</b>.</td><td><span class="q">۱۳۹۹-۳۵</span></td></tr>
+        <tr><td class="num">۲۷</td><td>رفع ابهام از مفاد حکم با <b>دادگاه صادرکنندهٔ حکم</b> — نه اجرای احکام، نه رأی تصحیحی.</td><td><span class="q">۱۴۰۳-۲۱</span></td></tr>
+        <tr><td class="num">۳۴</td><td>محکومٌ‌علیه <b>ده روز</b> از ابلاغ اجرائیه وقت دارد: اجرا کند، ترتیب پرداخت بدهد، یا مال معرفی کند. اگر توان ندارد، در همان مهلت باید <b>صورت جامع دارایی</b> بدهد.</td><td><span class="q">۱۳۹۸-۲۵</span></td></tr>
+        <tr><td class="num">۳۹</td><td>حکمِ اجراشده بر اثر فسخ، نقض یا اعاده دادرسی بی‌اثر شد؟ <b>به دستور دادگاه اجراکننده</b> همه‌چیز به حالت قبل برمی‌گردد؛ دعوای تازه لازم نیست.</td><td><span class="q">۱۴۰۰-۳۳</span></td></tr>
+        <tr><td class="num">۱۶۹</td><td>حکم دادگاه خارجی راجع به <b>مال غیرمنقولِ واقع در ایران</b>: <b>مطلقاً</b> قابل اجرا نیست.</td><td><span class="q">۱۳۹۸-۲۹</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ نیم‌عشر ═══ -->
+<section id="e2">
+  <div class="sec-head"><span class="sec-num">۰۲</span><h2>حق اجرا و توقیف حقوق</h2></div>
+  <p class="sec-sub">دو عدد که مستقیماً پرسیده می‌شوند و هیچ‌کدام در جزوه نیست.</p>
+
+  <div class="trick">
+    <p class="say">«ربع اگر زن و بچه دارد، وگرنه ثلث.»</p>
+    <p class="why">
+      از حقوق و مزایای کارکنان، اگر <b>زن یا فرزند داشته باشد یک‌چهارم</b> و اگر نداشته باشد
+      <b>یک‌سوم</b> توقیف می‌شود <span class="art">م ۹۶</span>.<br>
+      <span style="color:var(--ink-2)">حواست باشد: این کسرها فقط مالِ <b>حقوق و مزایا</b>ست. اگر سؤال از
+      ملک و باغ حرف زد، <b>تمام سهم</b> توقیف می‌شود نه کسری از آن.</span>
+      <span class="q">۱۳۹۹-۲۹</span>
+    </p>
+  </div>
+
+  <div class="trick">
+    <p class="say">«سازش کردی؟ نصفِ نیم‌عشر.»</p>
+    <p class="why">
+      حق اجرا (نیم‌عشر) پس از <b>ده روز</b> از ابلاغ اجرائیه بر عهدهٔ محکومٌ‌علیه است — ولی اگر طرفین
+      <b>سازش کنند</b> یا خودشان ترتیبی برای اجرا بدهند، <b>نصف</b> حق اجرا گرفته می‌شود
+      <span class="art">م ۱۶۰</span>.
+      <span class="q">۱۴۰۲-۳۰</span> <span class="q">۱۴۰۴-۴۰</span>
+    </p>
+  </div>
+</section>
+
+<!-- ═══ مزایده ═══ -->
+<section id="e3">
+  <div class="sec-head"><span class="sec-num">۰۳</span><h2>مزایده</h2></div>
+  <p class="sec-sub">سه سال آخر هر سال یک سؤال داده.</p>
+  <ul class="points">
+    <li>فروش اموال <b>از طریق مزایده</b> انجام می‌شود <span class="art">م ۱۱۴</span>. خروج از این تشریفات و عرضه در حراج تخصصی، فقط <b>با توافق محکومٌ‌له و محکومٌ‌علیه</b>. <span class="q">۱۴۰۴-۳۶</span></li>
+    <li>نوبت اول خریدار نداشت ← محکومٌ‌له می‌تواند <b>تجدید مزایده</b> بخواهد، و آنجا مال <b>به هر مبلغی</b> که خریدار پیدا کند فروخته می‌شود <span class="art">م ۱۳۱</span>. <span class="q">۱۴۰۲-۲۷</span></li>
+    <li><b>موارد بطلان مزایده و تجدید آن</b> <span class="art">م ۱۳۶</span>: فروش در غیر روز و ساعت یا محلِ آگهی‌شده · مانع شدنِ بی‌جهت از خرید کسی یا رد کردن بالاترین قیمت · نبودن نمایندهٔ دادسرا در مزایده.</li>
+    <li>دادگاه صحت مزایده را احراز و دستور انتقال داد؟ <b>باز هم دعوای ابطال مزایده قابل استماع است</b>، در فرض تخلفات مؤثر. <span class="art">م ۱۴۳ + رأی وحدت رویه ۸۴۵</span> <span class="q">۱۴۰۳-۲۳</span></li>
+  </ul>
+</section>
+
+<!-- ═══ محکومیت مالی ═══ -->
+<section id="m1">
+  <div class="sec-head"><span class="sec-num">۰۴</span><h2>محکومیت‌های مالی: چارچوب</h2></div>
+  <p class="sec-sub">قانونی که در کل ۴۵۵ صفحهٔ جزوه <b>یک بار</b> نام برده شده. ۲۹ ماده دارد و سبک است.</p>
+
+  <div class="trick">
+    <p class="say">«سی روز تا حبس نشوی.»</p>
+    <p class="why">
+      اگر محکومٌ‌به از راه‌های این قانون وصول نشود، محکومٌ‌علیه به تقاضای محکومٌ‌له <b>حبس می‌شود</b>
+      <span class="art">م ۳</span> — <b>مگر</b> ظرف <b>سی روز</b> از ابلاغ اجرائیه، همراه با <b>صورت کلیهٔ اموالش</b>،
+      دعوای اعسار اقامه کرده باشد.
+    </p>
+  </div>
+
+  <ul class="points">
+    <li>شناسایی و توقیف اموال با <b>مرجع اجراکنندهٔ رأی</b> است: قسمت اجرای دادگاه صادرکنندهٔ اجرائیه یا مجری نیابت. <span class="art">م ۲</span> <span class="q">۱۴۰۲-۲۴</span></li>
+    <li><b>ممنوع‌الخروجی</b> را مرجع اجراکنندهٔ رأی به تقاضای محکومٌ‌له صادر می‌کند و تا یکی از این‌ها باقی است: اجرای رأی، ثبوت اعسار، جلب رضایت محکومٌ‌له، سپردن تأمین مناسب، یا تحقق کفالت. <span class="art">م ۲۳</span> <span class="q">۱۴۰۲-۲۳</span></li>
+    <li>انتقال مال برای <b>فرار از دین</b>: حبس یا جزای نقدی درجه شش یا جزای نقدی معادل نصف محکومٌ‌به یا هر دو — و اگر <b>منتقلٌ‌الیه هم عالم باشد</b>، مال یا مثل یا قیمتش از خودِ او گرفته می‌شود. <span class="art">م ۲۱</span> <span class="q">۱۳۹۹-۳۷</span></li>
+    <li><b>همهٔ</b> محکومیت‌های مالی (دیه، ضرر و زیان ناشی از جرم، ردّ مال و…) مشمول این قانون‌اند — <b>جز جزای نقدی</b>. <span class="art">م ۲۲</span></li>
+    <li>برای <b>شخص حقوقی</b>، احکام این قانون اجرا می‌شود <b>جز</b> حبس، اعسار و مستثنیات دین. <span class="art">م ۲۶</span> — به همین دلیل راهِ تاجر و شخص حقوقی، ورشکستگی است نه اعسار. <span class="q">۱۳۹۸-۳۸</span></li>
+  </ul>
+</section>
+
+<!-- ═══ اعسار ═══ -->
+<section id="m2">
+  <div class="sec-head"><span class="sec-num">۰۵</span><h2>اعسار</h2></div>
+
+  <div class="trick">
+    <p class="say">«چیزی گرفتی؟ خودت ثابت کن.»</p>
+    <p class="why">
+      کل ماده ۷ سرِ یک سؤال می‌چرخد: <b>مدیون در عوض دین مالی گرفته یا نه؟</b><br>
+      <b>گرفته</b> (یا وضع سابقش نشان از ملائت دارد) ← اثبات اعسار بر عهدهٔ <b>خودِ اوست</b><br>
+      <b>نگرفته</b> ← اگر خواندهٔ دعوای اعسار نتواند ملائت فعلی یا سابق او را ثابت کند،
+      ادعای اعسار <b>با سوگند خودِ مدیون</b> پذیرفته می‌شود<br>
+      <span style="color:var(--ink-2)">مهریه نمونهٔ کلاسیک حالت دوم است — و همین سؤال ۱۴۰۰-۳۸ بود.</span>
+      <span class="q">۱۴۰۰-۳۸</span> <span class="q">۱۴۰۴-۳۷</span>
+    </p>
+  </div>
+
+  <ul class="points">
+    <li><b>معسر</b> کسی است که به دلیل نداشتن مالی <b>جز مستثنیات دین</b>، قادر به تأدیهٔ دیونش نباشد. <b>عدم دسترسی به مال، در حکم نداشتن مال است</b> و اثباتش با مدیون. <span class="art">م ۶</span></li>
+    <li><b>دعوای اعسار غیرمالی است و در مرحلهٔ بدوی و تجدیدنظر خارج از نوبت رسیدگی می‌شود.</b> <span class="art">م ۱۴</span> — عین همین عبارت، کلید سؤال ۱۴۰۳-۲۷ بود. <span class="q">۱۴۰۳-۲۷</span></li>
+    <li>در صورت ثبوت اعسار، اگر مدیون متمکن از پرداخت اقساطی باشد، دادگاه <b>مهلت مناسب یا حکم تقسیط</b> می‌دهد. <span class="art">م ۱۱</span></li>
+    <li>مخفی کردن اموال یا معسر جلوه دادنِ خلاف واقع ← دادگاه از حکم اعسار <b>رفع اثر</b> می‌کند و مجازات دارد. <span class="art">م ۱۶</span></li>
+    <li>مرجع طرح دعوا: همان <b>دادگاه بدویِ</b> در حال رسیدگی به دعوای اصلی یا آنکه اول به آن رسیدگی کرده. <span class="q">۱۳۹۹-۲۳</span></li>
+  </ul>
+</section>
+
+<!-- ═══ مستثنیات دین ═══ -->
+<section id="m3">
+  <div class="sec-head"><span class="sec-num">۰۶</span><h2>مستثنیات دین</h2></div>
+  <p class="sec-sub">
+    ماده ۲۴ می‌گوید «<b>صرفاً</b> شامل موارد زیر است» — یعنی فهرست <b>حصری</b> است.
+    هر گزینه‌ای که چیزی بیرون از این هفت مورد اضافه کند، غلط است.
+  </p>
+
+  <div class="trick">
+    <p class="say">«خانه، اثاثیه، آذوقه، کتاب، ابزار کار، تلفن، ودیعه.»</p>
+    <p class="why">
+      هفت مورد، به همین ترتیب — <b>سه تای اول</b> سرپناه و زندگی روزمره، <b>دو تای وسط</b> ابزارِ کار و علم،
+      و <b>دو تای آخر</b> دو چیز عملی. همه‌شان هم قید «در شأن» یا «مورد نیاز» دارند.
+    </p>
+  </div>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>بند</th><th>مورد</th><th>قید مهم</th></tr></thead>
+      <tbody>
+        <tr><td class="num">الف</td><td class="topic">منزل مسکونی</td><td>عرفاً <b>در شأن</b> محکومٌ‌علیه <b>در حالت اعسار</b> او</td></tr>
+        <tr><td class="num">ب</td><td class="topic">اثاثیهٔ زندگی</td><td>برای رفع <b>حوائج ضروری</b> او و افراد تحت تکفلش</td></tr>
+        <tr><td class="num">ج</td><td class="topic">آذوقه</td><td>به قدر احتیاج، برای مدتی که عرفاً ذخیره می‌شود</td></tr>
+        <tr><td class="num">د</td><td class="topic">کتب و ابزار علمی و تحقیقاتی</td><td><b>برای اهل علم و تحقیق</b>، متناسب با شأنشان</td></tr>
+        <tr><td class="num">هـ</td><td class="topic">وسایل و ابزار کار</td><td>کسبه، پیشه‌وران، کشاورزان و سایرین — برای <b>امرار معاش ضروری</b></td></tr>
+        <tr><td class="num">و</td><td class="topic">تلفن</td><td><b>مورد نیاز</b> مدیون</td></tr>
+        <tr><td class="num">ز</td><td class="topic">ودیعهٔ اجاره (پول پیش)</td><td>مشروط بر اینکه پرداخت اجاره‌بها بدونش <b>موجب عسر و حرج</b> شود و عین مستأجره مورد نیاز و در شأن او باشد</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sec-sub" style="margin-top:14px">
+    <b>تبصرهٔ مهم:</b> اگر منزل مسکونی <b>بیش از شأن و نیاز</b> او باشد و مال دیگری در دسترس نباشد و خودش
+    حاضر به فروش نشود، به تقاضای محکومٌ‌له فروخته می‌شود و <b>مازادِ قیمتِ منزل مناسب عرفی</b> صرف دیون می‌گردد.
+  </p>
+</section>
+
+<p class="footnote">
+  <b>از کجا آمده:</b> متن روزآمد <b>قانون اجرای احکام مدنی</b> و <b>قانون نحوهٔ اجرای محکومیت‌های مالی مصوب ۱۳۹۴</b>
+  (۲۹ ماده و ۱۳ تبصره)، فیلتر شده با موادی که در آزمون‌های ۱۳۹۸ تا ۱۴۰۴ واقعاً تست شده‌اند.
+  عمداً کوتاه نگه داشته شده — این جای خواندن قانون را نمی‌گیرد، فقط شکافِ جزوه را پر می‌کند.
+</p>
+
+</div></div>
+<a href="adm.html" style="position:fixed;bottom:18px;left:18px;z-index:50;background:var(--accent);color:#fff;text-decoration:none;padding:9px 16px;border-radius:3px;font-size:.85rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.2)">→ برگه کامل آ.د.م</a>
+
+</body>
+</html>
