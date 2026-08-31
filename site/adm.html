@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>کمک‌حافظه آیین دادرسی مدنی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Noto+Naskh+Arabic:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ground:#EFF3F1; --surface:#FFFFFF; --surface-2:#F7FAF8;
+  --ink:#131E1C; --ink-2:#3D4E4A; --muted:#6A7B77;
+  --line:#D7E0DC; --line-2:#C2CFCA;
+  --accent:#0E6B5C; --accent-soft:#DDEDE8; --accent-ink:#0A5145;
+  --alert:#9E3226; --alert-soft:#F7E4E1;
+  --gold:#7E6218; --gold-soft:#F2EBD7;
+  --shadow:0 1px 2px rgba(19,30,28,.05), 0 8px 24px -12px rgba(19,30,28,.15);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1413; --surface:#15201D; --surface-2:#1B2723;
+    --ink:#E2EBE7; --ink-2:#B4C4BF; --muted:#849791;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#48BBA6; --accent-soft:#14312B; --accent-ink:#7FD6C4;
+    --alert:#E8806E; --alert-soft:#331915;
+    --gold:#CBA84E; --gold-soft:#2E2715;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1413; --surface:#15201D; --surface-2:#1B2723;
+  --ink:#E2EBE7; --ink-2:#B4C4BF; --muted:#849791;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#48BBA6; --accent-soft:#14312B; --accent-ink:#7FD6C4;
+  --alert:#E8806E; --alert-soft:#331915;
+  --gold:#CBA84E; --gold-soft:#2E2715;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:'Vazirmatn', system-ui, sans-serif;
+  font-size:16px; line-height:1.75; font-weight:400;
+  -webkit-font-smoothing:antialiased;
+}
+.rtl{direction:rtl; text-align:right}
+.wrap{max-width:1080px; margin:0 auto; padding:0 20px 96px}
+
+/* ── سرلوح ─────────────────────────── */
+.masthead{
+  border-bottom:2px solid var(--ink); margin-bottom:8px;
+  padding:56px 0 22px; display:flex; flex-wrap:wrap;
+  align-items:flex-end; gap:24px; justify-content:space-between;
+}
+.masthead h1{
+  margin:0; font-size:clamp(2rem,5.5vw,3.1rem); font-weight:900;
+  letter-spacing:-.02em; line-height:1.15; text-wrap:balance;
+}
+.masthead h1 em{font-style:normal; color:var(--accent)}
+.stamp{
+  font-size:.78rem; color:var(--muted); line-height:1.9;
+  border-right:2px solid var(--accent); padding-right:12px; max-width:32ch;
+}
+.stamp b{color:var(--ink-2); font-weight:700; font-variant-numeric:tabular-nums}
+
+.lede{
+  font-size:1.03rem; color:var(--ink-2); max-width:66ch;
+  margin:26px 0 40px; line-height:1.9;
+}
+.lede strong{color:var(--ink); font-weight:700}
+
+/* ── ناوبری ────────────────────────── */
+nav.toc{
+  position:sticky; top:0; z-index:20; background:var(--ground);
+  border-bottom:1px solid var(--line); padding:10px 0; margin-bottom:44px;
+}
+nav.toc ul{
+  list-style:none; margin:0; padding:0; display:flex; gap:6px;
+  flex-wrap:wrap; font-size:.82rem;
+}
+nav.toc a{
+  display:block; padding:5px 11px; border-radius:2px; text-decoration:none;
+  color:var(--ink-2); border:1px solid transparent; transition:.15s;
+}
+nav.toc a:hover{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--line-2)}
+nav.toc a:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+/* ── بخش‌ها ────────────────────────── */
+section{margin:0 0 62px; scroll-margin-top:64px}
+.sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px; flex-wrap:wrap}
+.sec-num{
+  font-size:.72rem; font-weight:700; color:var(--accent);
+  letter-spacing:.14em; border:1px solid var(--accent); border-radius:2px;
+  padding:2px 7px; flex:none; font-variant-numeric:tabular-nums;
+}
+h2{
+  margin:0; font-size:clamp(1.35rem,3vw,1.72rem); font-weight:900;
+  letter-spacing:-.015em; text-wrap:balance;
+}
+.sec-sub{color:var(--muted); font-size:.9rem; margin:0 0 22px; max-width:64ch; line-height:1.8}
+
+/* ── جدول ──────────────────────────── */
+.tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--surface); box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:600px; font-size:.92rem}
+thead th{
+  background:var(--surface-2); text-align:right; font-weight:700; font-size:.78rem;
+  letter-spacing:.05em; color:var(--ink-2); padding:11px 16px;
+  border-bottom:1.5px solid var(--line-2); white-space:nowrap;
+}
+tbody td{padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.7}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.num{font-weight:700; color:var(--gold); font-variant-numeric:tabular-nums; white-space:nowrap}
+td.topic{font-weight:600; width:30%}
+.art{
+  font-size:.79rem; color:var(--accent-ink); background:var(--accent-soft);
+  padding:1px 7px; border-radius:2px; white-space:nowrap; font-weight:600;
+  display:inline-block; font-variant-numeric:tabular-nums;
+}
+
+/* ── چیپ سؤال ──────────────────────── */
+.qs{display:flex; flex-wrap:wrap; gap:4px; margin-top:6px}
+.q{
+  font-size:.68rem; color:var(--muted); border:1px solid var(--line-2);
+  padding:0 5px; border-radius:2px; font-variant-numeric:tabular-nums;
+  white-space:nowrap; line-height:1.7;
+}
+
+/* ── کارت تشخیص ────────────────────── */
+.triggers{display:grid; gap:0; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+.trig{
+  display:grid; grid-template-columns:minmax(200px,38%) 1fr; gap:0;
+  border-bottom:1px solid var(--line);
+}
+.trig:last-child{border-bottom:none}
+.trig:hover{background:var(--surface-2)}
+.trig-if{
+  padding:14px 16px; border-left:1px solid var(--line);
+  background:var(--surface-2); font-weight:600; font-size:.93rem; line-height:1.7;
+}
+.trig-if::before{content:"اگر دیدی: "; color:var(--muted); font-weight:400; font-size:.8rem}
+.trig-then{padding:14px 16px; font-size:.93rem}
+.trig-then b{color:var(--accent-ink); font-weight:700}
+@media (max-width:640px){
+  .trig{grid-template-columns:1fr}
+  .trig-if{border-left:none; border-bottom:1px solid var(--line)}
+}
+
+/* ── جفت‌های اشتباه‌انداز ───────────── */
+.pairs{display:grid; gap:20px}
+.pair{
+  border:1px solid var(--line); border-radius:3px; overflow:hidden;
+  background:var(--surface); box-shadow:var(--shadow);
+}
+.pair-h{
+  padding:11px 16px; background:var(--alert-soft); color:var(--alert);
+  font-weight:700; font-size:.92rem; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:8px;
+}
+.pair-h::before{
+  content:"دام"; font-size:.66rem; letter-spacing:.1em; font-weight:700;
+  border:1px solid currentColor; border-radius:2px; padding:1px 6px; flex:none;
+}
+.pair-body{display:grid; grid-template-columns:1fr 1fr}
+.pair-col{padding:15px 17px; font-size:.9rem; line-height:1.8}
+.pair-col:first-child{border-left:1px solid var(--line)}
+.pair-col h4{
+  margin:0 0 8px; font-size:.86rem; font-weight:800; color:var(--accent-ink);
+  letter-spacing:-.01em;
+}
+.pair-col ul{margin:0; padding-right:16px}
+.pair-col li{margin-bottom:5px}
+.pair-key{
+  grid-column:1/-1; padding:12px 17px; border-top:1px solid var(--line);
+  background:var(--surface-2); font-size:.88rem; color:var(--ink-2);
+}
+.pair-key b{color:var(--ink); font-weight:700}
+@media (max-width:640px){
+  .pair-body{grid-template-columns:1fr}
+  .pair-col:first-child{border-left:none; border-bottom:1px solid var(--line)}
+}
+
+/* ── متن ماده ──────────────────────── */
+.statute{
+  font-family:'Noto Naskh Arabic', serif; font-size:.95rem; line-height:2.1;
+  background:var(--surface-2); border-right:3px solid var(--accent);
+  padding:12px 16px; margin:14px 0; color:var(--ink-2); border-radius:0 3px 3px 0;
+}
+.statute cite{display:block; font-family:'Vazirmatn',sans-serif; font-style:normal; font-size:.75rem; color:var(--muted); margin-top:6px}
+
+/* ── درخت تصمیم ────────────────────── */
+.tree{
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:8px 4px; box-shadow:var(--shadow);
+}
+.branch{border-bottom:1px solid var(--line); padding:12px 16px}
+.branch:last-child{border-bottom:none}
+.branch-q{font-weight:700; font-size:.94rem; margin-bottom:5px}
+.branch-a{font-size:.9rem; color:var(--ink-2); padding-right:14px; border-right:2px solid var(--accent-soft)}
+.branch-a b{color:var(--accent-ink)}
+
+/* ── فهرست نکته ────────────────────── */
+.points{list-style:none; margin:0; padding:0; display:grid; gap:11px}
+.points li{
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  padding:13px 16px; font-size:.93rem; line-height:1.8; box-shadow:var(--shadow);
+}
+.points b{color:var(--accent-ink); font-weight:700}
+.points .no{color:var(--alert); font-weight:700}
+
+/* ── نوار فراوانی ──────────────────── */
+.freq{display:grid; gap:5px}
+.freq-row{display:grid; grid-template-columns:minmax(150px,26%) 1fr 42px; align-items:center; gap:12px; font-size:.87rem}
+.freq-name{font-weight:600}
+.bar{height:16px; background:var(--accent-soft); border-radius:2px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--accent); border-radius:2px}
+.freq-n{text-align:left; color:var(--muted); font-variant-numeric:tabular-nums; font-weight:700}
+
+.footnote{
+  margin-top:56px; padding-top:20px; border-top:1px solid var(--line);
+  font-size:.82rem; color:var(--muted); line-height:1.9; max-width:70ch;
+}
+.footnote b{color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+</style>
+</head>
+<body>
+
+
+<div class="rtl">
+<div class="wrap">
+
+<header class="masthead">
+  <h1>کمک‌حافظه <em>آیین دادرسی مدنی</em></h1>
+  <div class="stamp">
+    ساخته‌شده از <b>۱۴۰ سؤال</b> واقعی آ.د.م در آزمون‌های <b>۱۳۹۸ تا ۱۴۰۴</b> مرکز وکلا<br>
+    هر نکته با شماره سؤال‌هایی که در آن آمده علامت خورده
+  </div>
+</header>
+
+<p class="lede">
+  این یک خلاصهٔ درسی نیست. فهرستی است از چیزهایی که <strong>واقعاً در این هفت آزمون تکرار شده‌اند</strong> — با تمرکز روی
+  دو چیزی که سریع‌ترین امتیاز را می‌دهند: <strong>عددها</strong> (مهلت و نصاب) و <strong>نشانه‌های تشخیص سریع</strong>
+  که با دیدنشان می‌شود بدون خواندن کل صورت سؤال، گزینه را حدس زد. متن مواد از نسخهٔ روزآمدِ خود قوانین نقل شده است.
+</p>
+
+<nav class="toc" aria-label="فهرست">
+  <ul>
+    <li><a href="#numbers">عددها</a></li>
+    <li><a href="#triggers">تشخیص سریع</a></li>
+    <li><a href="#traps">جفت‌های اشتباه‌انداز</a></li>
+    <li><a href="#salahiat">صلاحیت</a></li>
+    <li><a href="#mali">مالی یا غیرمالی</a></li>
+    <li><a href="#tari">دعاوی طاری</a></li>
+    <li><a href="#shekayat">راه‌های شکایت از رأی</a></li>
+    <li><a href="#davari">داوری</a></li>
+    <li><a href="#ejra">اجرا و تأمین</a></li>
+    <li><a href="#divan">دیوان عدالت</a></li>
+    <li><a href="#vahdat">وحدت رویه تازه</a></li>
+    <li><a href="#freq">نقشهٔ فراوانی</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ ۱ عددها ═══ -->
+<section id="numbers">
+  <div class="sec-head"><span class="sec-num">۰۱</span><h2>عددها</h2></div>
+  <p class="sec-sub">
+    پرسودترین چیزی که می‌شود حفظ کرد. سؤالِ عددی معمولاً یک خطی است و بدون تحلیل جواب می‌دهد.
+    قاعدهٔ طلایی: هر مهلتی که «بیست روز» است، برای مقیم خارج «دو ماه» می‌شود.
+  </p>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>موضوع</th><th>مهلت / نصاب</th><th>مستند</th><th>سؤال‌ها</th></tr></thead>
+      <tbody>
+        <tr><td class="topic">واخواهی از حکم غیابی</td><td class="num">۲۰ روز — خارج: ۲ ماه</td><td><span class="art">م ۳۰۶ آ.د.م</span></td><td><span class="q">۱۳۹۸-۲۴</span></td></tr>
+        <tr><td class="topic">تجدیدنظرخواهی</td><td class="num">۲۰ روز — خارج: ۲ ماه</td><td><span class="art">م ۳۳۶ آ.د.م</span></td><td><span class="q">۱۴۰۰-۲۸</span></td></tr>
+        <tr><td class="topic">فرجام‌خواهی</td><td class="num">۲۰ روز — خارج: ۲ ماه</td><td><span class="art">م ۳۹۷ آ.د.م</span></td><td></td></tr>
+        <tr><td class="topic">اعاده دادرسی</td><td class="num">۲۰ روز — خارج: ۲ ماه</td><td><span class="art">م ۴۲۷ آ.د.م</span></td><td><span class="q">۱۳۹۸-۲۶</span></td></tr>
+        <tr><td class="topic">بطلان رأی داور</td><td class="num">۲۰ روز از ابلاغ — خارج: ۲ ماه</td><td><span class="art">م ۴۹۰ آ.د.م</span></td><td><span class="q">۱۴۰۰-۲۴</span><span class="q">۱۴۰۱-۲۱</span></td></tr>
+        <tr><td class="topic">مهلت محکومٌ‌علیه برای اجرای رأی داور<br><span style="color:var(--muted);font-size:.84rem">پس از آن، اجرائیه صادر می‌شود</span></td><td class="num">۲۰ روز</td><td><span class="art">م ۴۸۸ آ.د.م</span></td><td></td></tr>
+        <tr><td class="topic">اجرای اجرائیه توسط محکومٌ‌علیه</td><td class="num">۱۰ روز از ابلاغ</td><td><span class="art">م ۳۴ اجرای احکام</span></td><td><span class="q">۱۳۹۸-۲۵</span></td></tr>
+        <tr><td class="topic">دادخواست جلب ثالث<br><span style="color:var(--muted);font-size:.84rem">اظهار جهات تا پایان جلسه اول</span></td><td class="num">۳ روز پس از جلسه اول</td><td><span class="art">م ۱۳۵ آ.د.م</span></td><td><span class="q">۱۴۰۰-۳۱</span><span class="q">۱۴۰۴-۲۶</span></td></tr>
+        <tr><td class="topic">دادخواست دعوای متقابل</td><td class="num">تا پایان اولین جلسه دادرسی</td><td><span class="art">م ۱۴۳ آ.د.م</span></td><td><span class="q">۱۴۰۳-۳۲</span><span class="q">۱۴۰۴-۲۷</span></td></tr>
+        <tr><td class="topic">اعتراض به بهای خواسته</td><td class="num">تا اولین جلسه دادرسی</td><td><span class="art">م ۶۳ آ.د.م</span></td><td><span class="q">۱۴۰۳-۳۰</span></td></tr>
+        <tr><td class="topic">اقامه دعوا در مرجع صالح<br><span style="color:var(--muted);font-size:.84rem">وقتی رسیدگی منوط به اثبات ادعایی در دادگاه دیگر است</span></td><td class="num">۱ ماه</td><td><span class="art">م ۱۹ آ.د.م</span></td><td><span class="q">۱۳۹۸-۲۷</span><span class="q">۱۴۰۳-۲۹</span></td></tr>
+        <tr><td class="topic">طرح اصل دعوا پس از دستور موقت</td><td class="num">۲۰ روز از تاریخ صدور</td><td><span class="art">م ۳۱۸ آ.د.م</span></td><td></td></tr>
+        <tr><td class="topic">دستور موقت دادگاه خانواده<br><span style="color:var(--muted);font-size:.84rem">اگر تصمیمی درباره اصل دعوا نگیرند، خودبه‌خود لغو</span></td><td class="num">۶ ماه</td><td><span class="art">م ۷ حمایت خانواده</span></td><td><span class="q">۱۴۰۴-۳۹</span></td></tr>
+        <tr><td class="topic">متصرفِ عین محکومٌ‌به که مدعی حق است</td><td class="num">۱ هفته مهلت + ۱۵ روز برای ارائه قرار تأخیر</td><td><span class="art">م ۴۴ اجرای احکام</span></td><td><span class="q">۱۴۰۲-۲۲</span><span class="q">۱۴۰۱-۲۴</span></td></tr>
+        <tr><td class="topic">نصاب قابلیت تجدیدنظر (دعوای مالی)</td><td class="num">بیش از ۳٬۰۰۰٬۰۰۰ ریال</td><td><span class="art">م ۳۳۱ آ.د.م</span></td><td><span class="q">۱۳۹۹-۲۱</span><span class="q">۱۳۹۹-۲۵</span></td></tr>
+        <tr><td class="topic">نصاب فرجام‌خواهی (دعوای مالی)</td><td class="num">بیش از ۲۰٬۰۰۰٬۰۰۰ ریال</td><td><span class="art">م ۳۶۷ آ.د.م</span></td><td><span class="q">۱۴۰۴-۳۴</span></td></tr>
+        <tr><td class="topic">نصاب صلاحیت دادگاه صلح</td><td class="num">تا ۱٬۰۰۰٬۰۰۰٬۰۰۰ ریال</td><td><span class="art">م ۱۲ شوراها ۱۴۰۲</span></td><td><span class="q">۱۴۰۳-۳۶</span><span class="q">۱۴۰۴-۸۱</span></td></tr>
+        <tr><td class="topic">خسارت دعوای واهی<br><span style="color:var(--muted);font-size:.84rem">وقتی معلوم شود قصد، تأخیر یا ایذاء بوده</span></td><td class="num">۳ برابر هزینه دادرسی به نفع دولت</td><td><span class="art">تبصره م ۱۰۹ آ.د.م</span></td><td><span class="q">۱۴۰۳-۳۸</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="statute">
+    مواعد: سال دوازده ماه، ماه سی روز، هفته هفت روز و شبانه‌روز بیست‌وچهار ساعت است. روزِ ابلاغ و روزِ اقدام جزء مدت
+    محسوب نمی‌شود، و اگر روز آخرِ موعد تعطیل باشد، روز آخر همان روزی است که ادارات باز می‌شوند.
+    <cite>مواد ۴۴۳ تا ۴۴۵ آیین دادرسی مدنی</cite>
+  </div>
+</section>
+
+<!-- ═══ ۲ تشخیص سریع ═══ -->
+<section id="triggers">
+  <div class="sec-head"><span class="sec-num">۰۲</span><h2>تشخیص سریع</h2></div>
+  <p class="sec-sub">
+    نشانه‌هایی که در صورت سؤال کاشته می‌شوند و تقریباً همیشه یک جواب مشخص دارند. اینها را که بشناسی،
+    بسیاری از سؤال‌ها را از روی یک عبارت جواب می‌دهی.
+  </p>
+
+  <div class="triggers">
+    <div class="trig"><div class="trig-if">مال غیرمنقول</div><div class="trig-then">دادگاه <b>محل وقوع مال</b> — بی‌توجه به اینکه طرف شرکت است یا شخص، و حتی اگر مهریه باشد. <span class="q">۱۳۹۸-۳۷</span> <span class="q">۱۴۰۲-۲۶</span> <span class="q">۱۴۰۰-۳۵</span></div></div>
+
+    <div class="trig"><div class="trig-if">«دادگاه رأساً قرار کارشناسی/تحقیق محلی داد» و می‌پرسد هزینه با کیست</div><div class="trig-then">مرحلهٔ بدوی: <b>خواهان</b>. مرحلهٔ تجدیدنظر: <b>تجدیدنظرخواه</b>. ندادنِ وسیله در بدوی ← ابطال دادخواست؛ در تجدیدنظر ← توقف تجدیدنظرخواهی، ولی رأی بدوی اجرا می‌شود. <span class="q">۱۳۹۸-۳۲</span> <span class="q">۱۴۰۳-۳۷</span></div></div>
+
+    <div class="trig"><div class="trig-if">شخص ثالث از رأی زیان دیده و در دادرسی طرف دعوا نبوده</div><div class="trig-then"><b>اعتراض ثالث</b>، نه اعاده دادرسی. اعاده دادرسی فقط برای طرفین است. <span class="q">۱۳۹۹-۲۶</span> <span class="q">۱۴۰۱-۲۴</span></div></div>
+
+    <div class="trig"><div class="trig-if">قبل از اعتراض، درخواست توقف اجرای رأی داور</div><div class="trig-then">رد می‌شود. توقف <b>فرع بر وجود اعتراض</b> است. دو سال پشت‌سرهم آمده. <span class="q">۱۴۰۰-۲۴</span> <span class="q">۱۴۰۱-۲۱</span></div></div>
+
+    <div class="trig"><div class="trig-if">دستور موقت درخواست شده که نتیجه‌اش همان خواستهٔ اصلی است</div><div class="trig-then">رد می‌شود. دستور موقت <b>نباید نتیجهٔ دعوای اصلی را از پیش محقق کند</b> (مثلاً رفع تصرف در دعوای خلع ید). <span class="q">۱۴۰۲-۳۵</span></div></div>
+
+    <div class="trig"><div class="trig-if">«رأی قابل تجزیه و تفکیک نیست» یا مسئولیت تضامنی</div><div class="trig-then">اثر اعتراضِ یک نفر به <b>همهٔ محکومٌ‌علیهم سرایت می‌کند</b>. <span class="q">۱۳۹۹-۲۸</span> <span class="q">۱۴۰۴-۳۱</span></div></div>
+
+    <div class="trig"><div class="trig-if">طرفین «حق اعتراض به نظر کارشناس» را ساقط کرده‌اند</div><div class="trig-then">این با ساقط کردن حق تجدیدنظر <b>فرق دارد</b> — حکم همچنان قابل تجدیدنظر است. ولی اگر نظر کارشناس را <b>قاطع دعوا</b> قرار داده باشند، آن بخش دیگر قابل شکایت نیست. <span class="q">۱۳۹۹-۲۵</span> <span class="q">۱۴۰۴-۳۲</span></div></div>
+
+    <div class="trig"><div class="trig-if">اقرارِ خوانده به «مسئولیت» خودش</div><div class="trig-then">اقرار فقط بر <b>امور موضوعی</b> اثر دارد؛ مسئولیت یک نتیجهٔ حقوقی است و تشخیصش با دادگاه. <span class="q">۱۴۰۲-۲۱</span></div></div>
+
+    <div class="trig"><div class="trig-if">تصرفِ مشترک بوده و یکی از شرکا آن را انحصاری کرده</div><div class="trig-then"><b>تصرف عدوانی</b> است؛ دادگاه وضع را به حال سابق (تصرف مشترک) برمی‌گرداند، نه اینکه خوانده را بیرون کند. <span class="q">۱۴۰۰-۲۶</span> <span class="q">۱۴۰۳-۳۴</span> <span class="q">۱۴۰۴-۲۹</span></div></div>
+
+    <div class="trig"><div class="trig-if">ایراد صلاحیت + دفاع ماهوی با هم مطرح شده</div><div class="trig-then">اول <b>صلاحیت</b>. ورود به ماهیت پیش از تعیین تکلیف ایراد ممنوع است. <span class="q">۱۴۰۴-۲۳</span> <span class="q">۱۳۹۹-۴۰</span></div></div>
+
+    <div class="trig"><div class="trig-if">نشانی خوانده در دادخواست غلط از آب درآمد</div><div class="trig-then"><b>نقص دادخواست</b> ← اخطار رفع نقص به خواهان. تعیین نشانی درست کار خواهان است نه مأمور ابلاغ. <span class="q">۱۴۰۰-۲۳</span> <span class="q">۱۴۰۱-۲۹</span></div></div>
+
+    <div class="trig"><div class="trig-if">ابلاغ ایراد داشته ولی خوانده لایحهٔ دفاعیِ ماهوی فرستاده</div><div class="trig-then">ایراد ابلاغ <b>بی‌اثر</b> می‌شود؛ خودش نشان داده باخبر بوده. <span class="q">۱۴۰۰-۲۷</span></div></div>
+
+    <div class="trig"><div class="trig-if">دادگاه تجدیدنظر «قرار» داده و وارد ماهیت نشده</div><div class="trig-then">رأی قطعیِ ماهوی همان <b>حکم بدوی</b> است؛ اعتراض ثالث و مانند آن در همان دادگاه بدوی مطرح می‌شود. <span class="q">۱۴۰۰-۲۱</span></div></div>
+
+    <div class="trig"><div class="trig-if">تاجر یا شخص حقوقیِ تجاری ادعای ناتوانی مالی دارد</div><div class="trig-then">راهش <b>ورشکستگی</b> است نه اعسار. <span class="q">۱۳۹۸-۳۸</span></div></div>
+
+    <div class="trig"><div class="trig-if">مناط صلاحیت و «در اثنای رسیدگی دادگاه جدیدی تأسیس شد»</div><div class="trig-then">ملاک، <b>تاریخ تقدیم دادخواست</b> است. <span class="q">۱۴۰۲-۳۸</span></div></div>
+
+    <div class="trig"><div class="trig-if">قانونِ شکلیِ جدید در جریان رسیدگی تصویب شد</div><div class="trig-then">قوانین شکلی <b>فوراً</b> بر پرونده‌های در جریان حاکم‌اند. <span class="q">۱۳۹۹-۲۱</span></div></div>
+  </div>
+</section>
+
+<!-- ═══ ۳ جفت‌های اشتباه‌انداز ═══ -->
+<section id="traps">
+  <div class="sec-head"><span class="sec-num">۰۳</span><h2>جفت‌های اشتباه‌انداز</h2></div>
+  <p class="sec-sub">
+    طراح سؤال معمولاً دو نهادِ شبیه‌به‌هم را جابه‌جا می‌کند و امیدوار است تفاوتشان یادت نباشد.
+    این پنج جفت، پرتکرارترین‌ها در هفت آزمون گذشته‌اند.
+  </p>
+
+  <div class="pairs">
+
+    <div class="pair">
+      <div class="pair-h">اعتراض ثالث در برابر اعاده دادرسی</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>اعتراض ثالث</h4>
+          <ul>
+            <li>معترض <b>طرف دعوا نبوده</b></li>
+            <li>حقِ خودِ او خلل دیده</li>
+            <li>اصلی: با دادخواست، به دادگاهِ صادرکنندهٔ <b>رأی قطعی</b></li>
+            <li>طاری: بدون دادخواست، در همان دادگاهِ در حال رسیدگی — مگر آن دادگاه پایین‌تر از صادرکننده باشد</li>
+            <li>مهلت ندارد</li>
+          </ul>
+        </div>
+        <div class="pair-col">
+          <h4>اعاده دادرسی</h4>
+          <ul>
+            <li>فقط <b>طرفین دعوا</b>؛ ثالث به هیچ عنوان وارد نمی‌شود <span class="art">م ۴۴۱</span></li>
+            <li>هفت جهت حصری <span class="art">م ۴۲۶</span></li>
+            <li>مرجع: دادگاه <b>صادرکنندهٔ حکم</b> — حتی اگر پرونده در دیوان عالی باشد</li>
+            <li>مهلت ۲۰ روز</li>
+            <li>در جعل و حیله، مهلت از ابلاغ <b>حکم نهاییِ اثبات جعل</b> <span class="art">م ۴۲۹</span></li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>کلید تشخیص:</b> بپرس «این آدم در آن دادرسی طرف بود یا نه؟» — نبود ← اعتراض ثالث. بود ← اعاده دادرسی.
+          <div class="qs"><span class="q">۱۳۹۸-۲۶</span><span class="q">۱۳۹۸-۳۱</span><span class="q">۱۳۹۸-۳۳</span><span class="q">۱۳۹۹-۲۶</span><span class="q">۱۴۰۰-۲۱</span><span class="q">۱۴۰۱-۳۵</span><span class="q">۱۴۰۴-۳۳</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div class="pair-h">دستور موقت در برابر تأمین خواسته</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>دستور موقت</h4>
+          <ul>
+            <li>شرط: <b>فوریت</b></li>
+            <li>می‌تواند توقیف مال، انجام عمل یا <b>منع از امری</b> باشد <span class="art">م ۳۱۶</span></li>
+            <li>تأمین از خواهان <b>الزامی</b> است <span class="art">م ۳۱۹</span></li>
+            <li>مستقلاً قابل اعتراض نیست؛ فقط همراه اصل رأی <span class="art">م ۳۲۵</span></li>
+            <li>طرف مقابل با سپردن تأمین متناسب می‌تواند رفع اثر بخواهد <span class="art">م ۳۲۱</span></li>
+          </ul>
+        </div>
+        <div class="pair-col">
+          <h4>تأمین خواسته</h4>
+          <ul>
+            <li>شرط: <b>خواستهٔ معلوم</b> — سودی که باید با کارشناسی معیّن شود کافی نیست</li>
+            <li>فقط توقیف مال</li>
+            <li><b>بدون اخطار</b> به خوانده رسیدگی می‌شود <span class="art">م ۱۱۵</span></li>
+            <li>پس از صدور، قرار به خوانده ابلاغ و سپس اجرا می‌شود <span class="art">م ۱۱۷</span></li>
+            <li>ابزارِ <b>خواهان</b> است؛ در مرحله تجدیدنظر هم از همان دادگاه خواسته می‌شود</li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>استثنای خانواده:</b> در امور فوری خانوادگی مثل ملاقات فرزند، دستور موقت <b>بدون اخذ تأمین</b> صادر و
+          <b>بدون تأیید رئیس حوزه قضایی</b> اجرا می‌شود <span class="art">م ۷ حمایت خانواده</span>.
+          <div class="qs"><span class="q">۱۳۹۸-۲۸</span><span class="q">۱۳۹۹-۲۹</span><span class="q">۱۳۹۹-۳۹</span><span class="q">۱۴۰۰-۲۵</span><span class="q">۱۴۰۱-۲۲</span><span class="q">۱۴۰۱-۳۱</span><span class="q">۱۴۰۱-۳۴</span><span class="q">۱۴۰۲-۳۵</span><span class="q">۱۴۰۳-۲۵</span><span class="q">۱۴۰۳-۲۸</span><span class="q">۱۴۰۴-۲۵</span><span class="q">۱۴۰۴-۳۹</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div class="pair-h">اعتراض ثالثِ اجرایی در برابر اعتراض ثالثِ عمومی</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>ثالثِ اجرایی <span class="art">م ۱۴۶ و ۱۴۷ اجرای احکام</span></h4>
+          <ul>
+            <li>موضوعش <b>مالِ توقیف‌شده</b> است</li>
+            <li>اگر ادعا مستند به <b>حکم قطعی یا سند رسمیِ مقدم بر توقیف</b> باشد ← توقیف بدون دعوا رفع می‌شود</li>
+            <li>وگرنه شکایت به دادگاه، بدون تشریفات و بدون هزینه دادرسی</li>
+          </ul>
+        </div>
+        <div class="pair-col">
+          <h4>ثالثِ عمومی <span class="art">م ۴۱۷ به بعد آ.د.م</span></h4>
+          <ul>
+            <li>موضوعش <b>خودِ رأی</b> است</li>
+            <li>وقتی متصرفِ عین محکومٌ‌به، محکومٌ‌علیه نیست: راهش این است، به دادگاه صادرکنندهٔ حکم</li>
+            <li>حکمی که در رسیدگی به ثالثِ اجرایی صادر شود، دوباره ثالثِ اجرایی نمی‌پذیرد ولی ثالثِ عمومی می‌پذیرد</li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>کلید تشخیص:</b> اگر سؤال از «مالِ توقیف‌شده» حرف می‌زند ← اجرایی. اگر از «رأی» حرف می‌زند ← عمومی.
+          <div class="qs"><span class="q">۱۴۰۱-۲۴</span><span class="q">۱۴۰۱-۳۵</span><span class="q">۱۴۰۲-۲۵</span><span class="q">۱۴۰۲-۳۳</span><span class="q">۱۴۰۲-۲۲</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div class="pair-h">ورود ثالث در برابر جلب ثالث در برابر دعوای متقابل</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>نقشِ هر کدام</h4>
+          <ul>
+            <li>واردِ ثالث ← <b>خواهان</b> است (خودش می‌آید)</li>
+            <li>مجلوبِ ثالث ← <b>خوانده</b> است (او را می‌آورند)</li>
+            <li>طرح‌کنندهٔ متقابل ← <b>خواهانِ</b> دعوای تقابل</li>
+          </ul>
+        </div>
+        <div class="pair-col">
+          <h4>شرط‌ها و سرنوشت</h4>
+          <ul>
+            <li>متقابل باید <b>علیه خواهانِ اصلی</b> باشد و <b>وحدت منشأ یا ارتباط کامل</b> داشته باشد</li>
+            <li>با <b>استرداد دعوای اصلی</b>: متقابل و ورودِ ثالثِ اصلی باقی می‌مانند؛ ورودِ ثالثِ تبعی از بین می‌رود</li>
+            <li>قرار رد دادخواست جلب ثالث <b>مستقلاً</b> قابل تجدیدنظر نیست</li>
+            <li>ورود ثالث در واخواهی و تجدیدنظر هم ممکن است — تا پیش از ختم دادرسی</li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>کلید تشخیص:</b> دعوای متقابل را فقط <b>خوانده علیه خواهان</b> می‌دهد. اگر مجلوبِ ثالث بخواهد دعوا کند،
+          طرفش فقط جلب‌کننده است.
+          <div class="qs"><span class="q">۱۳۹۸-۳۴</span><span class="q">۱۳۹۹-۲۲</span><span class="q">۱۴۰۰-۳۱</span><span class="q">۱۴۰۱-۳۳</span><span class="q">۱۴۰۲-۳۶</span><span class="q">۱۴۰۳-۳۲</span><span class="q">۱۴۰۳-۳۳</span><span class="q">۱۴۰۴-۲۶</span><span class="q">۱۴۰۴-۲۷</span><span class="q">۱۴۰۴-۲۸</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div class="pair-h">قابل تجدیدنظر در برابر قابل فرجام</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>غیرقابل تجدیدنظر <span class="art">تبصره م ۳۳۱</span></h4>
+          <ul>
+            <li>حکم مستند به <b>اقرار در دادگاه</b></li>
+            <li>حکم مستند به نظر کارشناسی که طرفین <b>کتباً</b> قاطع دعوا قرارش داده‌اند</li>
+            <li>استثنا: در خصوص صلاحیت دادگاه یا قاضی، باز هم قابل تجدیدنظر است</li>
+          </ul>
+        </div>
+        <div class="pair-col">
+          <h4>غیرقابل فرجام <span class="art">م ۳۶۹</span></h4>
+          <ul>
+            <li>مستند به اقرارِ <b>قاطع دعوا در دادگاه</b></li>
+            <li>مستند به نظر کارشناسِ قاطع دعوا (توافق کتبی)</li>
+            <li>مستند به <b>سوگندِ قاطع دعوا</b></li>
+            <li>وقتی طرفین حق فرجام را ساقط کرده‌اند</li>
+            <li>متفرعاتِ دعوایی که اصلش فرجام‌پذیر نیست</li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>فهرست فرجام‌پذیرِ ماده ۳۶۷:</b> خواسته بیش از ۲۰ میلیون ریال — و این دعاوی صرف‌نظر از مبلغ:
+          <b>اصل نکاح و فسخ آن، طلاق، نسب، حجر، وقف، ثلث، حبس، تولیت</b>. «سوگند» فقط در فرجام آمده، نه در تجدیدنظر.
+          <div class="qs"><span class="q">۱۳۹۹-۲۵</span><span class="q">۱۴۰۲-۳۲</span><span class="q">۱۴۰۴-۳۲</span><span class="q">۱۴۰۴-۳۴</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ۴ صلاحیت ═══ -->
+<section id="salahiat">
+  <div class="sec-head"><span class="sec-num">۰۴</span><h2>صلاحیت</h2></div>
+  <p class="sec-sub">۲۷ سؤال از ۱۴۰. پرتکرارترین موضوع بعد از قابلیت شکایت از رأی.</p>
+
+  <div class="tree">
+    <div class="branch">
+      <div class="branch-q">موضوع دعوا مال غیرمنقول است؟</div>
+      <div class="branch-a">بله ← <b>دادگاه محل وقوع مال</b>، بی‌استثنا. حتی مهریهٔ غیرمنقول، حتی وقتی یک طرف شرکت است. <span class="art">م ۱۲</span></div>
+    </div>
+    <div class="branch">
+      <div class="branch-q">خواسته هم منقول است هم غیرمنقول، از یک منشأ؟</div>
+      <div class="branch-a">با <b>یک دادخواست</b> در دادگاه محل وقوع مال غیرمنقول <span class="art">م ۱۵</span> <span class="q">۱۴۰۰-۳۵</span></div>
+    </div>
+    <div class="branch">
+      <div class="branch-q">دادگاه خودش را صالح نمی‌داند؟</div>
+      <div class="branch-a">قرار عدم صلاحیت ← دادگاه مرجوعٌ‌الیه باید <b>خارج از نوبت</b> دربارهٔ صلاحیت خود تصمیم بگیرد <span class="art">م ۲۷</span> <span class="q">۱۴۰۱-۲۸</span></div>
+    </div>
+    <div class="branch">
+      <div class="branch-q">اختلاف صلاحیت بین دو مرجع از دو استان مختلف؟</div>
+      <div class="branch-a">شعبهٔ اول دادگاه تجدیدنظرِ استانی که <b>آخرین</b> قرار عدم صلاحیت در آن صادر شده <span class="q">۱۴۰۳-۳۶</span> <span class="q">۱۴۰۴-۸۱</span></div>
+    </div>
+    <div class="branch">
+      <div class="branch-q">اختلاف بین شورای حل اختلاف و یک مرجع قضایی؟</div>
+      <div class="branch-a">نظر <b>مرجع قضایی</b> لازم‌الاتباع است <span class="art">م ۱۷ شوراها ۱۴۰۲</span> <span class="q">۱۴۰۲-۴۰</span></div>
+    </div>
+    <div class="branch">
+      <div class="branch-q">رسیدگی منوط به اثبات ادعایی در صلاحیت دادگاه دیگر است؟</div>
+      <div class="branch-a">رسیدگی <b>متوقف</b> می‌شود (نه رد) و خواهان <b>یک ماه</b> فرصت دارد آنجا اقامه دعوا کند و رسید بدهد؛ وگرنه قرار رد دعوا <span class="art">م ۱۹</span> <span class="q">۱۳۹۸-۲۷</span> <span class="q">۱۴۰۳-۲۹</span></div>
+    </div>
+    <div class="branch">
+      <div class="branch-q">رأی به علت عدم صلاحیت در دیوان عالی نقض شد؟</div>
+      <div class="branch-a">به دادگاهی می‌رود که <b>دیوان صالح بداند</b>؛ آن دادگاه <b>مکلف به رسیدگی</b> است و در صلاحیت خودش تجدیدنظر نمی‌کند <span class="art">م ۴۰۱</span> <span class="q">۱۴۰۱-۲۵</span></div>
+    </div>
+  </div>
+
+  <div class="statute">
+    صلاحیت‌های دادگاه صلح: دعاوی مالی تا یک میلیارد ریال؛ تصرف عدوانی، مزاحمت و ممانعت از حق؛ جهیزیه، مهریه و نفقه
+    تا همان نصاب؛ تخلیهٔ عین مستأجره و تعدیل اجاره‌بها (به‌جز سرقفلی و حق کسب و پیشه)؛ اعسار از محکومٌ‌به در صورتی
+    که خودش به اصل دعوا رسیدگی کرده باشد؛ حصر وراثت، تحریر ترکه، مهر و موم؛ تأمین دلیل.
+    <cite>ماده ۱۲ قانون شوراهای حل اختلاف مصوب ۱۴۰۲</cite>
+  </div>
+</section>
+
+<!-- ═══ مالی یا غیرمالی ═══ -->
+<section id="mali">
+  <div class="sec-head"><span class="sec-num">۰۵</span><h2>مالی یا غیرمالی؟</h2></div>
+  <p class="sec-sub">
+    این تشخیص، ورودیِ سه سؤالِ دیگر است: نصاب تجدیدنظر، نصاب فرجام، و هزینهٔ دادرسی. اگر اینجا اشتباه کنی،
+    زنجیره‌ای از گزینه‌ها را غلط می‌زنی. فهرست‌ها عیناً از جزوهٔ آ.د.م نقل شده‌اند.
+  </p>
+
+  <div class="pairs">
+    <div class="pair">
+      <div class="pair-h" style="background:var(--accent-soft);color:var(--accent-ink)">دو نوع دعوای غیرمالی</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>غیرمالی ذاتی</h4>
+          <p style="margin:0 0 8px">حقِ اصلیِ مورد ادعا از حقوق غیرمالی است:</p>
+          <ul>
+            <li>نکاح، طلاق، رجوع در طلاق</li>
+            <li>نسب، حجر</li>
+            <li>وقف، ثلث، حبس، تولیت</li>
+            <li>وکالت، وصیت</li>
+          </ul>
+          <p style="margin:8px 0 0; color:var(--alert)"><b>استثنا:</b> «وصیت به نفع مدعی» جزء دعاوی <b>مالی</b> است.</p>
+        </div>
+        <div class="pair-col">
+          <h4>غیرمالی اعتباری</h4>
+          <p style="margin:0 0 8px">ذاتاً مالی‌اند ولی قانون‌گذار در حکم غیرمالی دانسته:</p>
+          <ul>
+            <li>خلع ید — <b>در صورتی که مالکیت مورد نزاع نباشد</b></li>
+            <li>افراز، تقسیم و فروش اموال مشاع — با همان شرط</li>
+            <li>دعاوی روابط موجر و مستأجر — <b>به‌جز مطالبهٔ اجور</b></li>
+            <li>مزاحمت، ممانعت از حق و تصرف عدوانی در عین غیرمنقول</li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>در صورت تردید، اصل بر مالی بودن دعواست</b> — چون غالب حقوق مالی‌اند. و <b>دعوای اعسار غیرمالی است</b>
+          به تصریح قانون نحوهٔ اجرای محکومیت‌های مالی، هرچند از نظر اصول حقوقی و رویهٔ قضایی مالی شمرده می‌شد.
+          <div class="qs"><span class="q">۱۴۰۳-۲۷</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div class="pair-h" style="background:var(--accent-soft);color:var(--accent-ink)">منقول یا غیرمنقول</div>
+      <div class="pair-body">
+        <div class="pair-col">
+          <h4>قاعده</h4>
+          <ul>
+            <li>موضوع دعوا مطالبهٔ مال منقول ← دعوا <b>عینی و منقول</b></li>
+            <li>موضوع دعوا الزام خوانده به انجام تعهد ← دعوا <b>شخصی و منقول</b> — فرق نمی‌کند تعهد مربوط به مال منقول باشد یا غیرمنقول</li>
+            <li>در تردید، <b>اصل بر منقول بودن</b> است</li>
+          </ul>
+        </div>
+        <div class="pair-col">
+          <h4>مصداق‌های آزمونی</h4>
+          <ul>
+            <li>کلیهٔ دیون (قرض، ثمن مبیع، مال‌الاجاره) <b>در حکم منقول</b></li>
+            <li>الزام به تنظیم سند رسمیِ مال غیرمنقول ← <b>شخصی و منقول</b></li>
+            <li>الزام به احداث ساختمان، تحویل مال منقول ← شخصی و منقول</li>
+            <li>اجرت‌المثل و خسارات وارده بر املاک ← <b>غیرمنقول</b></li>
+          </ul>
+        </div>
+        <div class="pair-key">
+          <b>مرز مهم:</b> تفکیک دعاوی به «مالکیت» و «تصرف» <b>منحصر به اموال غیرمنقول</b> است؛
+          دعوای تصرف در مورد اموال منقول مصداق ندارد.
+          <div class="qs"><span class="q">۱۳۹۸-۳۷</span><span class="q">۱۴۰۰-۳۵</span><span class="q">۱۴۰۲-۲۶</span><span class="q">۱۴۰۴-۲۹</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ۵ دعاوی طاری ═══ -->
+<section id="tari">
+  <div class="sec-head"><span class="sec-num">۰۶</span><h2>دعاوی طاری</h2></div>
+  <p class="sec-sub">۱۲ سؤال. سه سالِ آخر پشت‌سرهم آمده و در ۱۴۰۴ سه سؤال از ده سؤالِ آ.د.م ۱ را به خود اختصاص داده.</p>
+  <ul class="points">
+    <li><b>ورودِ ثالثِ اصلی</b> دعوایی مستقل است و با استرداد دعوای اصلی از بین نمی‌رود؛ <b>ورودِ ثالثِ تبعی</b> تابع دعوای اصلی است و می‌رود. <span class="q">۱۴۰۲-۳۶</span></li>
+    <li><b>دعوای متقابل</b> با استرداد دعوای اصلی <span class="no">از بین نمی‌رود</span> — دعوایی مستقل است. <span class="q">۱۴۰۳-۳۲</span></li>
+    <li>اگر دعوای متقابل از <b>صلاحیت ذاتی</b> دادگاه بیرون باشد، به مرجع صالح فرستاده می‌شود و رسیدگی به واخواهی تا روشن شدن آن <b>متوقف</b> می‌ماند. <span class="q">۱۴۰۱-۳۳</span></li>
+    <li>ورود ثالث در <b>واخواهی</b> هم ممکن است، چون واخواهی ادامهٔ همان مرحلهٔ نخستین است نه مرحله‌ای جدا. <span class="q">۱۳۹۸-۳۴</span></li>
+    <li>نبودِ ارتباط کامل و وحدت منشأ (مثلاً تخلیه در برابر مطالبهٔ هزینهٔ تعمیر) ← جداگانه رسیدگی می‌شود. <span class="q">۱۴۰۴-۲۸</span></li>
+  </ul>
+</section>
+
+<!-- ═══ ۶ راه‌های شکایت ═══ -->
+<section id="shekayat">
+  <div class="sec-head"><span class="sec-num">۰۷</span><h2>راه‌های شکایت از رأی</h2></div>
+  <p class="sec-sub">۳۶ سؤال — پرتکرارترین خوشه در کل آ.د.م. این جدول را که بلد باشی، بخش بزرگی از آ.د.م ۳ حل است.</p>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>طریق</th><th>چه کسی</th><th>به کدام مرجع</th><th>نکتهٔ آزمونی</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="topic">واخواهی</td><td>محکومٌ‌علیهِ غایب</td><td>همان دادگاه صادرکننده</td>
+          <td>ادامهٔ مرحلهٔ نخستین است، نه مرحله‌ای تازه. اجرای حکم غیابی وقتی نیاز به تأمین ندارد که <b>ابلاغ واقعی</b> شده و مهلت واخواهی گذشته باشد.</td>
+        </tr>
+        <tr>
+          <td class="topic">تجدیدنظر</td><td>طرفین و قائم‌مقام آنان</td><td>دادگاه تجدیدنظر استان</td>
+          <td>قرارهای ماده ۳۳۲ فقط وقتی قابل تجدیدنظرند که <b>حکمِ اصل دعوا</b> قابل تجدیدنظر باشد. نقص دادخواست تجدیدنظر را <b>مدیر دفتر دادگاه بدوی</b> اخطار می‌کند.</td>
+        </tr>
+        <tr>
+          <td class="topic">فرجام</td><td>طرفین</td><td>دیوان عالی کشور</td>
+          <td>رسیدگیِ <b>شکلی و حکمی</b> است: انطباق رأی با شرع و قانون. ورود به ماهیت ندارد.</td>
+        </tr>
+        <tr>
+          <td class="topic">اعتراض ثالث</td><td>ثالثی که طرف دعوا نبوده</td><td>دادگاه صادرکنندهٔ <b>رأی قطعی</b></td>
+          <td>مهلت ندارد. اصلی با دادخواست، طاری بدون دادخواست.</td>
+        </tr>
+        <tr>
+          <td class="topic">اعاده دادرسی</td><td>فقط طرفین</td><td>دادگاه صادرکنندهٔ حکم</td>
+          <td>۷ جهت حصری. اگر پرونده در دیوان باشد، درخواست همان‌جا داده و به دادگاه صادرکننده فرستاده می‌شود.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ul class="points" style="margin-top:18px">
+    <li>ادعای جدید در تجدیدنظر مسموع نیست، ولی <b>مطالبهٔ قیمتِ عینی</b> که در بدوی موضوع رأی بوده، ادعای جدید محسوب نمی‌شود. <span class="art">م ۳۶۲</span> <span class="q">۱۳۹۸-۴۰</span></li>
+    <li>کسی که رأی به زیانش نیست، <b>نفعی در اعتراض ندارد</b> — حتی اگر اصلاً در دادرسی حاضر نشده باشد. <span class="q">۱۴۰۰-۲۲</span></li>
+    <li>رأی اعسار از هزینهٔ دادرسی در مسیر <b>واخواهی</b> نیست؛ راهش تجدیدنظر ظرف بیست روز است. <span class="q">۱۴۰۰-۲۸</span></li>
+  </ul>
+</section>
+
+<!-- ═══ ۷ داوری ═══ -->
+<section id="davari">
+  <div class="sec-head"><span class="sec-num">۰۸</span><h2>داوری</h2></div>
+  <p class="sec-sub">۱۱ سؤال، و تقریباً هر سال یکی. کم‌حجم است و بازدهی حفظ‌کردنش بالاست.</p>
+  <ul class="points">
+    <li>اعتراض به رأی داور <b>مانع اجرا نیست</b>، مگر دلایل اعتراض قوی باشد؛ آن‌وقت دادگاه قرار توقف می‌دهد و در صورت اقتضا تأمین می‌گیرد. <span class="art">م ۴۹۳</span> <span class="q">۱۳۹۹-۲۴</span></li>
+    <li>درخواستِ توقف <b>پیش از اعتراض</b> بی‌پایه است و رد می‌شود. دو سال پیاپی آمده. <span class="q">۱۴۰۰-۲۴</span> <span class="q">۱۴۰۱-۲۱</span></li>
+    <li>مرجع اعتراض: دادگاهی که دعوا را به داوری ارجاع کرده، <b>یا</b> دادگاهی که صلاحیت رسیدگی به اصل دعوا را دارد. <span class="art">م ۴۹۰</span> <span class="q">۱۴۰۰-۳۶</span></li>
+    <li>داوران تابع مقررات آ.د.م <span class="no">نیستند</span>، ولی باید <b>مقررات مربوط به داوری</b> را رعایت کنند. <span class="art">م ۴۷۷</span> <span class="q">۱۴۰۳-۴۰</span></li>
+    <li>داورِ معیّن فوت کند یا نتواند/نخواهد رسیدگی کند ← <b>شرط داوری از بین می‌رود</b> و دعوا به دادگاه می‌رود، مگر بر داور دیگری توافق کنند. <span class="art">م ۴۶۳</span> <span class="q">۱۴۰۲-۲۹</span></li>
+    <li>داوران باید از جلسه <b>مطلع</b> باشند؛ در این صورت رأی اکثریت با ذکر امتناع داورِ غایب معتبر است. <span class="art">م ۴۸۴</span> <span class="q">۱۴۰۴-۳۵</span></li>
+    <li>اختلافِ ناشی از <b>اجرای</b> رأی داور با دادگاهی است که <b>اجرائیه را صادر کرده</b>. <span class="q">۱۳۹۹-۳۵</span></li>
+    <li>اگر رأی داور اجرا شده و بعد حکم قطعی بطلان صادر شود، اعادهٔ وضع کارِ <b>همان دادگاه مجریِ حکم</b> است؛ دعوای تازه لازم نیست. <span class="art">م ۳۹ اجرای احکام</span> <span class="q">۱۴۰۰-۳۳</span></li>
+  </ul>
+</section>
+
+<!-- ═══ ۸ اجرا و تأمین ═══ -->
+<section id="ejra">
+  <div class="sec-head"><span class="sec-num">۰۹</span><h2>اجرا و تأمین</h2></div>
+  <p class="sec-sub">۲۵ سؤال. بیشترشان روی «مالِ در دستِ ثالث» و «مزایده» می‌چرخند.</p>
+  <ul class="points">
+    <li>مالِ <b>منقولِ</b> در تصرف ثالث: اگر متصرف ادعای مالکیت کند بازداشت نمی‌شود و <b>ارائهٔ دلیل هم لازم نیست</b>. <span class="art">م ۶۱ اجرای احکام</span> <span class="q">۱۴۰۲-۳۳</span></li>
+    <li><b>عینِ محکومٌ‌به</b> در تصرف ثالث: مانع اجرا نیست، مگر متصرف مدعی حق باشد <b>و دلیل ارائه کند</b> — آن‌وقت یک هفته مهلت + ۱۵ روز. <span class="art">م ۴۴</span> <span class="q">۱۴۰۲-۲۲</span></li>
+    <li>ادعای ثالث نسبت به مالِ <b>توقیف‌شده</b>، اگر مستند به <b>حکم قطعی یا سند رسمیِ مقدم بر توقیف</b> باشد ← توقیف بدون دعوا رفع می‌شود. <span class="art">م ۱۴۶</span> <span class="q">۱۴۰۲-۲۵</span></li>
+    <li>مزایدهٔ نوبت اول بی‌خریدار ماند ← محکومٌ‌له می‌تواند <b>تجدید مزایده</b> بخواهد و آنجا مال <b>به هر مبلغی</b> که خریدار پیدا کند فروخته می‌شود. <span class="art">م ۱۳۱</span> <span class="q">۱۴۰۲-۲۷</span></li>
+    <li>تأیید صحت مزایده توسط دادگاه، راهِ <b>دعوای ابطال مزایده</b> را نمی‌بندد. <span class="art">رأی وحدت رویه ۸۴۵ — ۱۴۰۲/۱۲/۸</span> <span class="q">۱۴۰۳-۲۳</span></li>
+    <li>اشتباه در اجرائیه: دادگاه <b>هم رأساً و هم به درخواست طرفین</b> ابطال یا تصحیح می‌کند. <span class="art">م ۱۱</span> <span class="q">۱۴۰۲-۲۸</span></li>
+    <li>ابهام در مفاد حکم را <b>همان دادگاه صادرکننده</b> رفع می‌کند. <span class="art">م ۲۷</span> <span class="q">۱۴۰۳-۲۱</span></li>
+    <li>حکم دادگاه خارجی راجع به <b>مال غیرمنقول واقع در ایران</b> قابل اجرا نیست. <span class="art">م ۱۶۹</span> <span class="q">۱۳۹۸-۲۹</span></li>
+    <li>خسارت تأخیر تأدیه بر پایهٔ شاخص <b>سالانه</b> بانک مرکزی و فقط برای <b>پول رایج کشور</b>. <span class="art">م ۵۲۲ + رأی وحدت رویه ۸۵۰</span> <span class="q">۱۴۰۱-۳۷</span></li>
+  </ul>
+</section>
+
+<!-- ═══ ۹ دیوان عدالت ═══ -->
+<section id="divan">
+  <div class="sec-head"><span class="sec-num">۱۰</span><h2>دیوان عدالت اداری</h2></div>
+  <p class="sec-sub">۱۴ سؤال — بیشتر از آنچه انتظار می‌رود. تقریباً همیشه یکی دو تا می‌آید و معمولاً دربارهٔ مرزِ صلاحیت است.</p>
+  <ul class="points">
+    <li><span class="no">خارج از صلاحیت دیوان:</span> آرای <b>مراجع قضایی</b> — از جمله دادگاه انتظامی قضات — و <b>تصمیمات و مقررات قضاییِ</b> قوه قضائیه. دیوان مرجع بازبینی آرای قضایی نیست. <span class="q">۱۳۹۹-۳۰</span> <span class="q">۱۴۰۰-۴۰</span></li>
+    <li>نظر <b>فقهای شورای نگهبان</b> دربارهٔ مغایرت مصوبه با شرع، هم برای هیئت عمومی و هم برای هیئت‌های تخصصی <b>لازم‌الاتباع</b> است. <span class="q">۱۳۹۹-۳۳</span></li>
+    <li>هیئت عمومی: تشکیل با <b>دوسوم</b> قضات دیوان، ولی صدور رأی با <b>اکثریت حاضران</b>. <span class="q">۱۴۰۱-۳۹</span></li>
+    <li>دادخواست بدون امضا ← مدیر دفتر ظرف <b>دو روز</b> اخطار رفع نقص، <b>ده روز</b> مهلت، و قرار رد را <b>خود دفتر</b> صادر می‌کند. <span class="art">م ۲۸</span> <span class="q">۱۴۰۲-۳۹</span></li>
+    <li>استرداد کامل شکایت ← <b>قرار سقوط شکایت</b>؛ همان شکایت دیگر قابل طرح نیست. <span class="q">۱۴۰۱-۴۰</span></li>
+    <li>دستور موقت را می‌توان همراه شکایت یا هر زمان <b>تا پیش از ختم رسیدگی</b> خواست. <span class="q">۱۴۰۰-۳۹</span></li>
+    <li>اعتراض ثالث در دیوان به <b>همان مرجعی</b> داده می‌شود که رأی قطعی را صادر کرده. <span class="q">۱۴۰۰-۳۴</span></li>
+    <li>شعبه هم اثر تصمیم را از بین می‌برد <b>و هم</b> طرف شکایت را به اعادهٔ حقوق تضییع‌شده ملزم می‌کند. <span class="art">م ۱۱</span> <span class="q">۱۴۰۴-۳۸</span></li>
+  </ul>
+</section>
+
+<!-- ═══ وحدت رویه تازه ═══ -->
+<section id="vahdat">
+  <div class="sec-head"><span class="sec-num">۱۱</span><h2>آرای وحدت رویه‌ای که جزوه ندارد</h2></div>
+  <p class="sec-sub">
+    فهرست آرای وحدت رویهٔ جزوهٔ آ.د.م تا <b>رأی ۷۷۳ (سال ۱۳۹۷)</b> جلو آمده و بعد از آن چیزی ندارد.
+    اینها آرای بعدی‌اند که به آ.د.م مربوط‌اند — و دست‌کم دو تایشان در آزمون‌های ۱۴۰۱ و ۱۴۰۳ مستقیماً تست شده‌اند.
+  </p>
+
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>رأی</th><th>تاریخ</th><th>حکم</th><th>ردّ پا در آزمون</th></tr></thead>
+      <tbody>
+        <tr><td class="num">۸۴۵</td><td class="num">۱۴۰۲/۱۲/۸</td>
+          <td>احراز صحت مزایده و صدور دستور انتقال، در فرض <b>تخلفات مؤثر</b>، مانع استماع دعوای ابطال مزایده و سند انتقال اجرایی نیست.</td>
+          <td><span class="q">۱۴۰۳-۲۳</span></td></tr>
+        <tr><td class="num">۸۵۰</td><td class="num">۱۴۰۳/۵/۱۶</td>
+          <td>مبنای محاسبهٔ خسارت تأخیر تأدیهٔ وجه نقد، شاخص قیمت <b>سالانه</b> اعلامی بانک مرکزی است، نه ماهانه.</td>
+          <td><span class="q">۱۴۰۱-۳۷</span></td></tr>
+        <tr><td class="num">۸۳۶</td><td class="num">۱۴۰۲/۶/۲۸</td>
+          <td>دعوای <b>ابطال رأی داور غیرمالی</b> است — حتی اگر موضوع اصلی مالی باشد؛ هزینهٔ دادرسی هم بر همان مبنا.</td>
+          <td>—</td></tr>
+        <tr><td class="num">۸۷۳</td><td class="num">۱۴۰۴/۹/۲۵</td>
+          <td>آرای <b>دادگاه‌های صلح قابل فرجام‌خواهی نیستند</b>، حتی اگر از تجدیدنظرخواهی صرف‌نظر شده یا مهلتش گذشته باشد.</td>
+          <td><span class="q">۱۴۰۱-۲۳</span></td></tr>
+        <tr><td class="num">۸۳۱</td><td class="num">۱۴۰۲/۳/۲</td>
+          <td>اعتراض ثالثِ کسی که طرف دعوای تجدیدنظر نبوده، نسبت به رأی دادگاه تجدیدنظر <b>قابل استماع است</b>.</td>
+          <td>—</td></tr>
+        <tr><td class="num">۸۱۱</td><td class="num">۱۴۰۰/۴/۱</td>
+          <td>در مستحق‌للغیر درآمدن مبیع با جهل خریدار، فروشنده باید <b>غرامات از جمله کاهش ارزش ثمن</b> را هم بدهد؛ تعیینش با کارشناس و بر پایهٔ نرخ تورم.</td>
+          <td><span class="q">۱۳۹۹-۶</span></td></tr>
+        <tr><td class="num">۷۸۸</td><td class="num">۱۳۹۹/۳/۲۷</td>
+          <td>خسارت تأخیر تأدیهٔ دوران توقف، نه از تاجر ورشکسته و نه از <b>ضامن</b> او قابل مطالبه نیست.</td>
+          <td><span class="q">۱۴۰۰-۴۷</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sec-sub" style="margin-top:16px">
+    نکتهٔ دیگر دربارهٔ جزوه: بخش <b>دادگاه صلح و قانون شوراهای حل اختلاف مصوب ۱۴۰۲</b> در آن هست و به‌روز است
+    (۱۲۵ ارجاع) — پس آن بخش را می‌شود از خود جزوه خواند.
+  </p>
+</section>
+
+<!-- ═══ ۱۰ فراوانی ═══ -->
+<section id="freq">
+  <div class="sec-head"><span class="sec-num">۱۲</span><h2>نقشهٔ فراوانی</h2></div>
+  <p class="sec-sub">
+    از ۱۴۰ سؤال آ.د.م در هفت آزمون. اگر وقت کم داری، از بالای این فهرست بخوان.
+    (یک سؤال می‌تواند در چند خوشه بیفتد.)
+  </p>
+  <div class="freq">
+    <div class="freq-row"><span class="freq-name">قابلیت شکایت از رأی</span><div class="bar"><i style="width:100%"></i></div><span class="freq-n">۳۶</span></div>
+    <div class="freq-row"><span class="freq-name">دادخواست، ابلاغ، رفع نقص</span><div class="bar"><i style="width:100%"></i></div><span class="freq-n">۳۶</span></div>
+    <div class="freq-row"><span class="freq-name">صلاحیت</span><div class="bar"><i style="width:75%"></i></div><span class="freq-n">۲۷</span></div>
+    <div class="freq-row"><span class="freq-name">اجرای احکام</span><div class="bar"><i style="width:69%"></i></div><span class="freq-n">۲۵</span></div>
+    <div class="freq-row"><span class="freq-name">ادله اثبات</span><div class="bar"><i style="width:61%"></i></div><span class="freq-n">۲۲</span></div>
+    <div class="freq-row"><span class="freq-name">دیوان عدالت اداری</span><div class="bar"><i style="width:39%"></i></div><span class="freq-n">۱۴</span></div>
+    <div class="freq-row"><span class="freq-name">دعاوی طاری</span><div class="bar"><i style="width:33%"></i></div><span class="freq-n">۱۲</span></div>
+    <div class="freq-row"><span class="freq-name">فرجام</span><div class="bar"><i style="width:31%"></i></div><span class="freq-n">۱۱</span></div>
+    <div class="freq-row"><span class="freq-name">داوری</span><div class="bar"><i style="width:31%"></i></div><span class="freq-n">۱۱</span></div>
+    <div class="freq-row"><span class="freq-name">دستور موقت</span><div class="bar"><i style="width:28%"></i></div><span class="freq-n">۱۰</span></div>
+    <div class="freq-row"><span class="freq-name">امور وکلا و انتظامی</span><div class="bar"><i style="width:28%"></i></div><span class="freq-n">۱۰</span></div>
+    <div class="freq-row"><span class="freq-name">شورای حل اختلاف و دادگاه صلح</span><div class="bar"><i style="width:25%"></i></div><span class="freq-n">۹</span></div>
+    <div class="freq-row"><span class="freq-name">واخواهی و حکم غیابی</span><div class="bar"><i style="width:22%"></i></div><span class="freq-n">۸</span></div>
+    <div class="freq-row"><span class="freq-name">اعسار</span><div class="bar"><i style="width:22%"></i></div><span class="freq-n">۸</span></div>
+    <div class="freq-row"><span class="freq-name">تأمین خواسته</span><div class="bar"><i style="width:19%"></i></div><span class="freq-n">۷</span></div>
+    <div class="freq-row"><span class="freq-name">اعتراض ثالث</span><div class="bar"><i style="width:19%"></i></div><span class="freq-n">۷</span></div>
+    <div class="freq-row"><span class="freq-name">تصرف عدوانی</span><div class="bar"><i style="width:11%"></i></div><span class="freq-n">۴</span></div>
+    <div class="freq-row"><span class="freq-name">اعاده دادرسی</span><div class="bar"><i style="width:8%"></i></div><span class="freq-n">۳</span></div>
+  </div>
+</section>
+
+<p class="footnote">
+  <b>چطور ساخته شد:</b> ۱۴۰ سؤال آیین دادرسی مدنی از آزمون‌های ۱۳۹۸ تا ۱۴۰۴ مرکز وکلا استخراج، بر پایهٔ موضوع
+  خوشه‌بندی و با متن روزآمدِ خود قوانین تطبیق داده شد. شماره‌های داخل چیپ‌ها، همان سؤال‌هایی است که آن نکته در آنها آمده.
+  <br><br>
+  <b>یک هشدار:</b> این کمک‌حافظه جای مطالعهٔ قانون را نمی‌گیرد و همهٔ ۱۴۰ سؤال را پوشش نمی‌دهد — روی چیزهایی تمرکز
+  کرده که تکرار شده‌اند و سریع جواب می‌دهند. چند مورد در بانک سؤال هست که کلید رسمی دفترچه با متن قانون تنش دارد؛
+  آنها در خود برنامه با نشان نارنجی «نیازمند تأیید حقوق‌دان» علامت خورده‌اند و اینجا نیامده‌اند.
+</p>
+
+</div>
+</div>
+
+<a href="./" style="position:fixed;bottom:18px;left:18px;z-index:50;background:var(--accent);color:#fff;text-decoration:none;padding:9px 16px;border-radius:3px;font-size:.85rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.2)">→ بازگشت به تست‌ها</a>
+
+</body>
+</html>
