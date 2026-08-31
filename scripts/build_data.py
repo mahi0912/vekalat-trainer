@@ -37,6 +37,7 @@ KANOON_FIELDS = ("source", "keyTrust", "acceptedAnswers", "subjectName", "tags")
 
 # تحلیل‌های بازنویسی‌شده که روی نسخه قالبی قدیمی سوار می‌شوند
 REWRITTEN = SITE / "analyses"
+REWRITTEN_KANOON = SITE / "analyses-kanoon"
 UNIT_FIX = SITE / "unit-corrections.json"
 
 
@@ -50,10 +51,13 @@ def load_unit_corrections() -> dict:
 def load_rewritten() -> dict:
     """تمام site/analyses/<سال>.json را در یک نگاشت شناسه → تحلیل ادغام می‌کند."""
     out: dict = {}
-    if not REWRITTEN.exists():
+    if not REWRITTEN.exists() and not REWRITTEN_KANOON.exists():
         return out
     for path in sorted(REWRITTEN.glob("*.json")):
         out.update(json.loads(path.read_text(encoding="utf-8")))
+    if REWRITTEN_KANOON.exists():
+        for path in sorted(REWRITTEN_KANOON.glob("*.json")):
+            out.update(json.loads(path.read_text(encoding="utf-8")))
     return out
 
 
