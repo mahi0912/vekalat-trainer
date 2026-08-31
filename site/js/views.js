@@ -5,7 +5,7 @@ import { insights, keyOf, PENALTY } from './state.js';
 
 /* ---------- خانه ---------- */
 
-export function home({ meta, unitCounts, resume }) {
+export function home({ meta, unitCounts, resume, mistakes }) {
   const years = YEARS.map(y =>
     `<button type="button" class="btn" data-year="${y}">
        <span class="unit">آزمون جامع ${fa(y)}</span>
@@ -20,6 +20,16 @@ export function home({ meta, unitCounts, resume }) {
             </button>`;
   }).join('');
 
+  const mistakeCard = mistakes ? `
+    <div class="card">
+      <h2>دفترچه اشتباهات</h2>
+      <p class="muted" style="margin:4px 0 12px">${fa(mistakes)} سؤالی که غلط زده‌ای اینجا جمع شده است. هر کدام را که درست بزنی از فهرست بیرون می‌رود.</p>
+      <div class="row">
+        <button type="button" class="btn primary" id="mistakeBtn">تمرین اشتباهات</button>
+        <button type="button" class="btn danger" id="mistakeClear">پاک کن</button>
+      </div>
+    </div>` : '';
+
   const resumeCard = resume ? `
     <div class="card">
       <h2>ادامه آزمون نیمه‌تمام</h2>
@@ -32,6 +42,7 @@ export function home({ meta, unitCounts, resume }) {
 
   return `
     ${resumeCard}
+    ${mistakeCard}
     <div class="card">
       <div class="hero">
         <div><b>${fa(meta.total)}</b><small>سؤال واقعی</small></div>
@@ -61,6 +72,36 @@ export function subject(gi, unitCounts) {
             <h2>${esc(name)}</h2>
             <div class="grid" style="margin-top:12px">${buttons}</div>
           </div>`;
+}
+
+
+/* ---------- انتخاب تعداد سؤال ---------- */
+
+/**
+ * پیش از شروع، تعداد سؤال و ترتیب را می‌پرسد.
+ * گزینه‌های تعداد بر اساس اندازه واقعی مجموعه ساخته می‌شوند تا دکمه بی‌معنا نسازیم.
+ */
+export function picker(title, total) {
+  const steps = [10, 20, 30, 50, 100].filter(n => n < total);
+  const counts = [...steps, total];
+  const buttons = counts.map((n, i) =>
+    `<button type="button" class="btn ${i === counts.length - 1 ? '' : ''}" data-count="${n}">
+       <span class="unit">${n === total ? 'همه سؤال‌ها' : `${fa(n)} سؤال`}</span>
+       <span class="count">${n === total ? `${fa(total)} سؤال` : `از ${fa(total)} سؤال`}</span>
+     </button>`).join('');
+
+  return `<div class="card">
+      <button type="button" class="btn ghost" id="pickerBack" style="margin-bottom:14px">→ بازگشت</button>
+      <h2>${esc(title)}</h2>
+      <p class="muted" style="margin:4px 0 14px">چند سؤال می‌خواهی؟</p>
+      <div class="grid">${buttons}</div>
+      <h2 style="margin-top:22px;font-size:1rem">ترتیب</h2>
+      <div class="row" style="margin-top:10px">
+        <button type="button" class="btn" id="ordBook" aria-pressed="true">به ترتیب دفترچه</button>
+        <button type="button" class="btn" id="ordRand" aria-pressed="false">تصادفی</button>
+      </div>
+      <p class="muted" style="margin:12px 0 0;font-size:.85rem">اگر تعدادی کمتر از کل بخواهی، سؤال‌ها به‌صورت تصادفی از همان مجموعه انتخاب می‌شوند تا هر بار تمرین تازه‌ای داشته باشی.</p>
+    </div>`;
 }
 
 /* ---------- آزمون ---------- */
@@ -157,8 +198,16 @@ function insightBlock(s) {
     </div>`;
 }
 
-export function results(s, title) {
+export function results(s, title, md) {
   const net = Math.max(0, s.net);
+  const mistakeNote = md && (md.added || md.cleared) ? `
+    <div class="card" style="margin-top:14px">
+      <h2 style="font-size:1rem">دفترچه اشتباهات به‌روز شد</h2>
+      <p class="muted" style="margin:6px 0 0">
+        ${md.added ? `${fa(md.added)} سؤال تازه اضافه شد.` : ''}
+        ${md.cleared ? `${fa(md.cleared)} سؤال که این بار درست زدی از فهرست بیرون رفت.` : ''}
+      </p>
+    </div>` : '';
   return `
     <div class="card">
       <h2>نتیجه ${esc(title)}</h2>
@@ -176,6 +225,7 @@ export function results(s, title) {
           </div>
         </div>
       </div>
+      ${mistakeNote}
       ${s.lawChanged ? `<div class="warning" style="margin-top:14px">
         در ${fa(s.lawChanged)} سؤال این آزمون، قانون بعد از برگزاری آزمون تغییر کرده و پاسخ صحیح امروز
         با کلید دفترچه فرق دارد. نمره بر مبنای <b>قانون امروز</b> حساب شده است؛ توضیح هر مورد در کارت

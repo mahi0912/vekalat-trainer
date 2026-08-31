@@ -2,6 +2,7 @@
 import * as data from './data.js';
 import * as session from './state.js';
 import * as view from './views.js';
+import * as mistakes from './mistakes.js';
 import { COURSE_GROUPS } from './groups.js';
 import { esc, fa, $, on, toTop, skeleton } from './util.js';
 
@@ -46,12 +47,18 @@ function goHome() {
   if (saved && saved.finishedAt) session.clear();
   const resume = saved && !saved.finishedAt ? saved : null;
 
-  app.innerHTML = view.home({ meta, unitCounts, resume });
+  app.innerHTML = view.home({ meta, unitCounts, resume, mistakes: mistakes.count() });
   on(app, '[data-year]', 'click', e => startYear(+e.currentTarget.dataset.year));
   on(app, '[data-subject]', 'click', e => showSubject(+e.currentTarget.dataset.subject));
   if (resume) {
     $('#resumeBtn').addEventListener('click', () => { s = resume; renderExam(); });
     $('#dropBtn').addEventListener('click', () => { session.clear(); goHome(); });
+  }
+  if (mistakes.count()) {
+    $('#mistakeBtn').addEventListener('click', startMistakes);
+    $('#mistakeClear').addEventListener('click', () => {
+      if (confirm('کل دفترچه اشتباهات پاک شود؟ این کار برگشت‌پذیر نیست.')) { mistakes.clear(); goHome(); }
+    });
   }
   toTop();
 }
@@ -62,17 +69,66 @@ function showSubject(gi) {
   $('#backHome').addEventListener('click', goHome);
   on(app, '[data-unit]', 'click', e => {
     const unit = COURSE_GROUPS[gi][1][+e.currentTarget.dataset.unit];
-    start(all().filter(q => q.courseUnit === unit)
-            .sort((a, b) => (a.year - b.year) || (a.q - b.q)), unit, 'unit');
+    askCount(all().filter(q => q.courseUnit === unit)
+               .sort((a, b) => (a.year - b.year) || (a.q - b.q)), unit, 'unit');
   });
   toTop();
 }
 
 const all = () => [...byId.values()];
 
-const startYear = y => start(
+const startYear = y => askCount(
   all().filter(q => +q.year === y).sort((a, b) => a.q - b.q),
   `آزمون جامع ${fa(y)}`, 'year');
+
+/** سؤال‌های اشتباه‌زده‌شده، تازه‌ترین اول. */
+function startMistakes() {
+  const qs = mistakes.ids().map(id => byId.get(id)).filter(Boolean);
+  if (!qs.length) { alert('دفترچه اشتباهات خالی است.'); return; }
+  askCount(qs, 'تمرین اشتباهات', 'mistakes');
+}
+
+/** انتخاب تصادفی n عضو، بدون دست زدن به آرایه ورودی. */
+function sample(arr, n) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, n);
+}
+
+/**
+ * صفحه انتخاب تعداد. اگر مجموعه ده سؤال یا کمتر داشته باشد
+ * پرسیدن بی‌فایده است و مستقیم شروع می‌شود.
+ */
+function askCount(qs, title, mode) {
+  if (!qs.length) { alert('برای این مجموعه سؤالی ثبت نشده است.'); return; }
+  if (qs.length <= 10) { start(qs, title, mode); return; }
+
+  homeBtn.classList.remove('hidden');
+  app.innerHTML = view.picker(title, qs.length);
+  let shuffle = false;
+  const ordBook = $('#ordBook'), ordRand = $('#ordRand');
+  const setOrder = rand => {
+    shuffle = rand;
+    ordBook.setAttribute('aria-pressed', String(!rand));
+    ordRand.setAttribute('aria-pressed', String(rand));
+  };
+  ordBook.addEventListener('click', () => setOrder(false));
+  ordRand.addEventListener('click', () => setOrder(true));
+  $('#pickerBack').addEventListener('click', goHome);
+
+  on(app, '[data-count]', 'click', e => {
+    const n = +e.currentTarget.dataset.count;
+    // برای زیرمجموعه، انتخاب تصادفی است تا هر بار تمرین تازه باشد
+    let picked = n >= qs.length ? qs.slice() : sample(qs, n);
+    if (!shuffle) picked.sort((a, b) => (a.year - b.year) || (a.q - b.q));
+    else picked = sample(picked, picked.length);
+    start(picked, n >= qs.length ? title : `${title} — ${fa(n)} سؤال`, mode);
+  });
+  toTop();
+}
 
 function start(qs, title, mode) {
   if (!qs.length) { alert('برای این واحد سؤالی ثبت نشده است.'); return; }
@@ -153,7 +209,9 @@ async function renderResults() {
   stopTicker();
   const qs = qsOf(s);
   const sc = session.score(qs, s.ans);
-  app.innerHTML = view.results(sc, s.title);
+  // ثبت در دفترچه اشتباهات: غلط‌ها اضافه، درست‌ها حذف. بی‌پاسخ‌ها دست‌نخورده.
+  const md = mistakes.apply(qs, s.ans, session.keyOf);
+  app.innerHTML = view.results(sc, s.title, md);
   $('#resultHome').addEventListener('click', () => { session.clear(); goHome(); });
   toTop();
 
