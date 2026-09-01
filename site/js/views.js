@@ -261,8 +261,7 @@ export function results(s, title, md) {
       </div>
       ${mistakeNote}
       ${s.lawChanged ? `<div class="warning" style="margin-top:14px">
-        در ${fa(s.lawChanged)} سؤال این آزمون، قانون بعد از برگزاری آزمون تغییر کرده و پاسخ صحیح امروز
-        با کلید دفترچه فرق دارد. نمره بر مبنای <b>قانون امروز</b> حساب شده است؛ توضیح هر مورد در کارت
+        در ${fa(s.lawChanged)} سؤال این آزمون، پاسخ صحیح امروز با کلید دفترچه فرق دارد. نمره بر مبنای <b>قانون امروز</b> حساب شده است؛ توضیح هر مورد در کارت
         همان سؤال آمده.</div>` : ''}
       <p class="muted" style="margin:14px 0 0">
         درصد خام = صحیح ÷ کل. درصد با نمره منفی = (صحیح − غلط×⅓) ÷ کل، مطابق شیوه نمره‌دهی آزمون مرکز وکلا؛
@@ -308,7 +307,7 @@ export function reviewCard(q, picked, analysis) {
 
   const changeBanner = changed ? `
     <div class="warning" style="margin-bottom:10px">
-      <b>قانون تغییر کرده است.</b> کلید رسمی دفترچه در سال ${fa(q.year)} گزینه ${fa(keyExam)} بود،
+      <b>کلید امروز با کلید دفترچه فرق دارد.</b> کلید رسمی دفترچه در سال ${fa(q.year)} گزینه ${fa(keyExam)} بود،
       اما بر مبنای قانون امروز پاسخ صحیح گزینه ${fa(keyToday)} است.
       ${a.changeNote ? '<br>' + esc(a.changeNote) : ''}
       <br><small>نمره تو بر مبنای قانون امروز حساب شده است.</small>
