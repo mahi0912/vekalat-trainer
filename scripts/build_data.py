@@ -167,12 +167,20 @@ def main() -> int:
     markaz = [r for r in questions if r.get("source") != "kanoon"]
     kanoonq = [r for r in questions if r.get("source") == "kanoon"]
 
+    def unit_years(rows):
+        """نگاشت واحد درسی → {سال: تعداد} تا بشود درس یک سالِ خاص را جدا آزمون داد."""
+        out: dict = {}
+        for r in rows:
+            out.setdefault(r["courseUnit"], Counter())[int(r["year"])] += 1
+        return {u: {str(y): c[y] for y in sorted(c)} for u, c in sorted(out.items())}
+
     def counts(rows):
         y = Counter(int(r["year"]) for r in rows)
         u = Counter(r["courseUnit"] for r in rows)
         return {"total": len(rows),
                 "years": {str(k): y[k] for k in sorted(y)},
-                "units": dict(sorted(u.items()))}
+                "units": dict(sorted(u.items())),
+                "unitYears": unit_years(rows)}
 
     units = Counter(r["courseUnit"] for r in markaz)
     years = Counter(int(r["year"]) for r in markaz)
@@ -180,6 +188,7 @@ def main() -> int:
         "total": len(markaz),
         "years": {str(y): years[y] for y in sorted(years)},
         "units": dict(sorted(units.items())),
+        "unitYears": unit_years(markaz),
         "rewritten": len(rewritten_ids),
         "keyChanged": len(changed_keys),
         "kanoon": counts(kanoonq) if kanoonq else None,

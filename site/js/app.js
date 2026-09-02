@@ -55,11 +55,8 @@ function goHome() {
     askCount(all().filter(q => q.source === 'kanoon' && +q.year === y).sort((a, b) => a.q - b.q),
              `کانون وکلا ${fa(y)}`, 'kanoon-year');
   });
-  on(app, '[data-ksubject]', 'click', e => {
-    const u = e.currentTarget.dataset.ksubject;
-    askCount(all().filter(q => q.source === 'kanoon' && q.courseUnit === u)
-               .sort((a, b) => (a.year - b.year) || (a.q - b.q)), `${u} — کانون`, 'kanoon-unit');
-  });
+  on(app, '[data-ksubject]', 'click', e =>
+    showUnitYears(e.currentTarget.dataset.ksubject, true));
   if (resume) {
     $('#resumeBtn').addEventListener('click', () => { s = resume; renderExam(); });
     $('#dropBtn').addEventListener('click', () => { session.clear(); goHome(); });
@@ -77,10 +74,40 @@ function showSubject(gi) {
   homeBtn.classList.remove('hidden');
   app.innerHTML = view.subject(gi, unitCounts);
   $('#backHome').addEventListener('click', goHome);
-  on(app, '[data-unit]', 'click', e => {
-    const unit = COURSE_GROUPS[gi][1][+e.currentTarget.dataset.unit];
-    askCount(all().filter(q => q.source !== 'kanoon' && q.courseUnit === unit)
-               .sort((a, b) => (a.year - b.year) || (a.q - b.q)), unit, 'unit');
+  on(app, '[data-unit]', 'click', e =>
+    showUnitYears(COURSE_GROUPS[gi][1][+e.currentTarget.dataset.unit], false, () => showSubject(gi)));
+  toTop();
+}
+
+/**
+ * صفحه دوره‌های یک درس. از اینجا یا همه سال‌ها با هم آزمون داده می‌شود
+ * یا فقط یک دوره — همان دفترچه آن سال، به ترتیب.
+ */
+function showUnitYears(unit, kanoon, back) {
+  const byYear = (kanoon ? meta.kanoon.unitYears : meta.unitYears)?.[unit] || {};
+  const pool = () => all().filter(q => (q.source === 'kanoon') === kanoon && q.courseUnit === unit);
+  const label = kanoon ? `${unit} — کانون` : unit;
+
+  // اگر سال‌بندی در دست نبود، مثل قبل مستقیم برو سراغ انتخاب تعداد
+  if (!Object.keys(byYear).length) {
+    askCount(pool().sort((a, b) => (a.year - b.year) || (a.q - b.q)),
+             label, kanoon ? 'kanoon-unit' : 'unit');
+    return;
+  }
+
+  homeBtn.classList.remove('hidden');
+  app.innerHTML = view.unitYears(label, byYear, back ? 'بازگشت به واحدها' : 'بازگشت به درس‌ها');
+  $('#uyBack').addEventListener('click', back || goHome);
+  on(app, '[data-uyear]', 'click', e => {
+    const v = e.currentTarget.dataset.uyear;
+    if (v === 'all') {
+      askCount(pool().sort((a, b) => (a.year - b.year) || (a.q - b.q)),
+               label, kanoon ? 'kanoon-unit' : 'unit');
+    } else {
+      const y = +v;
+      askCount(pool().filter(q => +q.year === y).sort((a, b) => a.q - b.q),
+               `${label} — ${fa(y)}`, kanoon ? 'kanoon-unit-year' : 'unit-year');
+    }
   });
   toTop();
 }
