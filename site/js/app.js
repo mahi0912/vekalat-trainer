@@ -56,7 +56,7 @@ function goHome() {
              `کانون وکلا ${fa(y)}`, 'kanoon-year');
   });
   on(app, '[data-ksubject]', 'click', e =>
-    showUnitYears(e.currentTarget.dataset.ksubject, true));
+    startUnit(e.currentTarget.dataset.ksubject, e.currentTarget.dataset.uy, true));
   if (resume) {
     $('#resumeBtn').addEventListener('click', () => { s = resume; renderExam(); });
     $('#dropBtn').addEventListener('click', () => { session.clear(); goHome(); });
@@ -72,44 +72,28 @@ function goHome() {
 
 function showSubject(gi) {
   homeBtn.classList.remove('hidden');
-  app.innerHTML = view.subject(gi, unitCounts);
+  app.innerHTML = view.subject(gi, unitCounts, meta.unitYears);
   $('#backHome').addEventListener('click', goHome);
   on(app, '[data-unit]', 'click', e =>
-    showUnitYears(COURSE_GROUPS[gi][1][+e.currentTarget.dataset.unit], false, () => showSubject(gi)));
+    startUnit(e.currentTarget.dataset.unit, e.currentTarget.dataset.uy, false));
   toTop();
 }
 
 /**
- * صفحه دوره‌های یک درس. از اینجا یا همه سال‌ها با هم آزمون داده می‌شود
- * یا فقط یک دوره — همان دفترچه آن سال، به ترتیب.
+ * شروع آزمونِ یک واحد درسی. اگر سالی خواسته شده باشد فقط همان دوره،
+ * وگرنه همهٔ سال‌ها پشت سر هم به ترتیب دفترچه.
  */
-function showUnitYears(unit, kanoon, back) {
-  const byYear = (kanoon ? meta.kanoon.unitYears : meta.unitYears)?.[unit] || {};
-  const pool = () => all().filter(q => (q.source === 'kanoon') === kanoon && q.courseUnit === unit);
+function startUnit(unit, uy, kanoon) {
+  const pool = all().filter(q => (q.source === 'kanoon') === kanoon && q.courseUnit === unit);
   const label = kanoon ? `${unit} — کانون` : unit;
-
-  // اگر سال‌بندی در دست نبود، مثل قبل مستقیم برو سراغ انتخاب تعداد
-  if (!Object.keys(byYear).length) {
-    askCount(pool().sort((a, b) => (a.year - b.year) || (a.q - b.q)),
+  if (uy && uy !== 'all') {
+    const y = +uy;
+    askCount(pool.filter(q => +q.year === y).sort((a, b) => a.q - b.q),
+             `${label} — ${fa(y)}`, kanoon ? 'kanoon-unit-year' : 'unit-year');
+  } else {
+    askCount(pool.sort((a, b) => (a.year - b.year) || (a.q - b.q)),
              label, kanoon ? 'kanoon-unit' : 'unit');
-    return;
   }
-
-  homeBtn.classList.remove('hidden');
-  app.innerHTML = view.unitYears(label, byYear, back ? 'بازگشت به واحدها' : 'بازگشت به درس‌ها');
-  $('#uyBack').addEventListener('click', back || goHome);
-  on(app, '[data-uyear]', 'click', e => {
-    const v = e.currentTarget.dataset.uyear;
-    if (v === 'all') {
-      askCount(pool().sort((a, b) => (a.year - b.year) || (a.q - b.q)),
-               label, kanoon ? 'kanoon-unit' : 'unit');
-    } else {
-      const y = +v;
-      askCount(pool().filter(q => +q.year === y).sort((a, b) => a.q - b.q),
-               `${label} — ${fa(y)}`, kanoon ? 'kanoon-unit-year' : 'unit-year');
-    }
-  });
-  toTop();
 }
 
 const all = () => [...byId.values()];

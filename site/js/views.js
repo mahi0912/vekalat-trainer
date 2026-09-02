@@ -5,6 +5,26 @@ import { insights, keyOf, PENALTY } from './state.js';
 
 /* ---------- خانه ---------- */
 
+/** ردیف دوره‌های یک درس: «همه» به‌علاوه هر سال جداگانه. */
+function yearRow(unit, byYear, attr) {
+  const yrs = Object.keys(byYear || {}).map(Number).sort((a, b) => a - b);
+  const total = yrs.reduce((t, y) => t + byYear[y], 0);
+  // بدون سال‌بندی، همان رفتار قدیمی: یک دکمه برای کل واحد
+  if (!yrs.length) return `<div class="ublock">
+      <p class="uname">${esc(unit)}</p>
+      <div class="yrs"><button type="button" class="ybtn all" ${attr}="${esc(unit)}" data-uy="all">همه سال‌ها</button></div>
+    </div>`;
+  const one = y => `<button type="button" class="ybtn" ${attr}="${esc(unit)}" data-uy="${y}">
+      <b>${fa(y)}</b><small>${fa(byYear[y])}</small></button>`;
+  return `<div class="ublock">
+      <p class="uname">${esc(unit)} <small>${fa(total)} سؤال · ${fa(yrs.length)} دوره</small></p>
+      <div class="yrs">
+        <button type="button" class="ybtn all" ${attr}="${esc(unit)}" data-uy="all">همه سال‌ها</button>
+        ${yrs.map(one).join('')}
+      </div>
+    </div>`;
+}
+
 export function home({ meta, unitCounts, resume, mistakes }) {
   const kn = meta.kanoon;
   const years = YEARS.map(y =>
@@ -52,15 +72,10 @@ export function home({ meta, unitCounts, resume, mistakes }) {
              <span class="count">${fa(kn.years[y])} سؤال</span>
            </button>`).join('')}
       </div>
-      <h2 style="margin-top:20px;font-size:1rem">درس‌به‌درس کانون</h2>
-      <p class="muted" style="margin:6px 0 0;font-size:.85rem">هر درس را باز کن تا دوره‌هایش را جدا ببینی.</p>
-      <div class="grid" style="margin-top:10px">
-        ${KANOON_SUBJECTS.filter(u => kn.units[u]).map(u =>
-          `<button type="button" class="btn" data-ksubject="${esc(u)}">
-             <span class="unit">${esc(u)}</span>
-             <span class="count">${fa(kn.units[u])} سؤال</span>
-           </button>`).join('')}
-      </div>
+      <h2 style="margin-top:22px;font-size:1rem">درس‌به‌درس کانون</h2>
+      <p class="muted" style="margin:6px 0 14px">هر دوره را جدا آزمون بده، یا همه سال‌های یک درس را با هم.</p>
+      ${KANOON_SUBJECTS.filter(u => kn.units[u])
+        .map(u => yearRow(u, (kn.unitYears || {})[u], 'data-ksubject')).join('')}
     </div>` : '';
 
   return `
@@ -84,47 +99,19 @@ export function home({ meta, unitCounts, resume, mistakes }) {
     </div>`;
 }
 
-export function subject(gi, unitCounts) {
+export function subject(gi, unitCounts, unitYears) {
   const [name, units] = COURSE_GROUPS[gi];
-  const buttons = units.map((u, i) =>
-    `<button type="button" class="btn" data-unit="${i}" ${unitCounts[u] ? '' : 'disabled'}>
-       <span class="unit">${esc(u)}</span>
-       <span class="count">${fa(unitCounts[u] || 0)} سؤال</span>
-     </button>`).join('');
+  const blocks = units
+    .filter(u => unitCounts[u])
+    .map(u => yearRow(u, (unitYears || {})[u], 'data-unit')).join('');
   return `<div class="card">
             <button type="button" class="btn ghost" id="backHome" style="margin-bottom:14px">→ بازگشت به درس‌ها</button>
             <h2>${esc(name)}</h2>
-            <div class="grid" style="margin-top:12px">${buttons}</div>
+            <p class="muted" style="margin:4px 0 14px">هر دوره را جدا آزمون بده، یا همه سال‌های یک واحد را با هم.</p>
+            ${blocks}
           </div>`;
 }
 
-
-/**
- * صفحه انتخاب سال درون یک درس: «همه سال‌ها» به‌علاوه هر دوره جداگانه،
- * تا بشود مثلاً فقط آیین دادرسی مدنیِ ۱۴۰۳ را آزمون داد.
- */
-export function unitYears(name, byYear, backLabel) {
-  const yrs = Object.keys(byYear).map(Number).sort((a, b) => a - b);
-  const total = yrs.reduce((t, y) => t + byYear[y], 0);
-  const buttons = yrs.map(y =>
-    `<button type="button" class="btn" data-uyear="${y}">
-       <span class="unit">${esc(name)} — ${fa(y)}</span>
-       <span class="count">${fa(byYear[y])} سؤال</span>
-     </button>`).join('');
-  return `<div class="card">
-      <button type="button" class="btn ghost" id="uyBack" style="margin-bottom:14px">→ ${esc(backLabel)}</button>
-      <h2>${esc(name)}</h2>
-      <p class="muted" style="margin:4px 0 14px">یک دوره را جدا آزمون بده، یا همه سال‌ها را یک‌جا تمرین کن.</p>
-      <div class="grid">
-        <button type="button" class="btn primary" data-uyear="all">
-          <span class="unit">همه سال‌ها</span>
-          <span class="count">${fa(total)} سؤال از ${fa(yrs.length)} دوره</span>
-        </button>
-      </div>
-      <h2 style="margin-top:22px;font-size:1rem">به تفکیک دوره</h2>
-      <div class="grid" style="margin-top:10px">${buttons}</div>
-    </div>`;
-}
 
 /* ---------- انتخاب تعداد سؤال ---------- */
 

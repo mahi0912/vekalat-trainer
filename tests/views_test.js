@@ -27,8 +27,19 @@ ok('home: دکمه ادامه دارد', withResume.indexOf('resumeBtn') > -1);
 ok('home: هر ۷ سال هست', (home({meta:F.meta,unitCounts:unitCounts,resume:null}).match(/data-year=/g)||[]).length === 7);
 
 // ---------- انتخاب درس ----------
-html('subject', subject(0, unitCounts));
-ok('subject: ۸ واحد مدنی', (subject(0, unitCounts).match(/data-unit=/g) || []).length === 8);
+var subjHtml = subject(0, unitCounts, F.meta.unitYears);
+html('subject', subjHtml);
+ok('subject: ۸ واحد مدنی', (subjHtml.match(/class="ublock"/g) || []).length === 8);
+ok('subject: هر واحد دکمه «همه سال‌ها» دارد', (subjHtml.match(/data-uy="all"/g) || []).length === 8);
+ok('subject: دکمه سال جدا هم هست', subjHtml.indexOf('data-uy="1398"') > -1);
+ok('subject: بدون سال‌بندی هم نمی‌شکند',
+   (subject(0, unitCounts).match(/data-uy="all"/g) || []).length === 8);
+
+// ---------- دوره‌های کانون در صفحه خانه ----------
+var homeHtml = home({ meta: F.meta, unitCounts: unitCounts, resume: null });
+if (F.meta.kanoon && F.meta.kanoon.unitYears) {
+  ok('home: درس کانون دکمه سال دارد', homeHtml.indexOf('data-ksubject=') > -1 && homeHtml.indexOf('data-uy=') > -1);
+}
 
 // ---------- آزمون ----------
 var e = exam(qs[0], { index: 0, total: qs.length, picked: 0, flagged: false, answered: 0, elapsed: '۰۰:۰۵' });

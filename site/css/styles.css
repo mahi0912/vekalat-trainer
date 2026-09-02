@@ -126,6 +126,25 @@ body {
 .btn.danger { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 35%, var(--border)); text-align: center; font-weight: 600; }
 .btn.danger:hover:not(:disabled) { background: var(--bad-soft); border-color: var(--bad); }
 .btn .unit { font-weight: 700; display: block; }
+/* ردیف دوره‌های یک درس: دکمه‌های کوچکِ سال، زیر نام درس */
+.ublock { margin-bottom: 14px; }
+.ublock:last-child { margin-bottom: 0; }
+.uname {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  margin: 0 0 7px; font-weight: 700; font-size: 14px;
+}
+.uname small { font-weight: 400; font-size: 12px; color: var(--muted); }
+.yrs { display: flex; flex-wrap: wrap; gap: 7px; }
+.ybtn {
+  font: inherit; font-size: 13px; cursor: pointer;
+  padding: 7px 11px; border-radius: 9px;
+  border: 1.5px solid var(--border); background: var(--surface); color: inherit;
+}
+.ybtn:hover { border-color: var(--primary); background: var(--primary-soft); }
+.ybtn:active { transform: scale(.98); }
+.ybtn b { font-weight: 700; }
+.ybtn small { color: var(--muted); font-size: 11px; margin-inline-start: 4px; }
+.ybtn.all { border-color: var(--primary); font-weight: 700; }
 .btn .count { font-size: 12px; color: var(--muted); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; }
 .row > .btn { flex: 1; min-width: 120px; }
