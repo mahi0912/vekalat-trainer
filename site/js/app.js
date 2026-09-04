@@ -17,6 +17,9 @@ let ticker = null;
 
 const qsOf = sess => sess.qs.map(id => byId.get(id)).filter(Boolean);
 
+/** کلید فایل تحلیل یک سؤال — کانون پیشوند k دارد. */
+const reviewKey = q => (q.source === 'kanoon' ? 'k' : '') + q.year;
+
 /* ---------- زمان ---------- */
 
 function elapsed(sess) {
@@ -241,7 +244,8 @@ async function renderResults() {
 
   let analyses;
   try {
-    analyses = await data.review(qs.map(q => q.year));
+    // تحلیل‌های کانون در فایل جدا نگهداری می‌شوند: data/review/k<سال>.json
+    analyses = await data.review(qs.map(reviewKey));
   } catch (err) {
     list.innerHTML = `<div class="card"><div class="warning">بارگذاری تحلیل‌ها ناموزن بود: ${esc(err.message)}</div></div>`;
     return;

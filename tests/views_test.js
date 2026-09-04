@@ -41,6 +41,14 @@ if (F.meta.kanoon && F.meta.kanoon.unitYears) {
   ok('home: درس کانون دکمه سال دارد', homeHtml.indexOf('data-ksubject=') > -1 && homeHtml.indexOf('data-uy=') > -1);
 }
 
+// ---------- کلید فایل تحلیل ----------
+// باگ واقعی: تحلیل‌های کانون در data/review/k<سال>.json هستند نه <سال>.json
+var rk = function (q) { return (q.source === 'kanoon' ? 'k' : '') + q.year; };
+ok('کلید تحلیل کانون پیشوند k دارد', rk({ source: 'kanoon', year: 1403 }) === 'k1403');
+ok('کلید تحلیل مرکز بدون پیشوند است', rk({ year: 1403 }) === '1403');
+ok('آزمون ترکیبی هر دو فایل را می‌خواهد',
+   [{source:'kanoon',year:1403},{year:1403}].map(rk).join(',') === 'k1403,1403');
+
 // ---------- آزمون ----------
 var e = exam(qs[0], { index: 0, total: qs.length, picked: 0, flagged: false, answered: 0, elapsed: '۰۰:۰۵' });
 html('exam', e);

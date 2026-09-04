@@ -23,11 +23,14 @@ export async function meta() {
   return cache.meta;
 }
 
-/** تحلیل‌های حقوقی سال‌های خواسته‌شده را می‌آورد و در یک نگاشت id → تحلیل ادغام می‌کند. */
-export async function review(years) {
-  const wanted = [...new Set(years)];
-  await Promise.all(wanted.map(async y => {
-    if (!cache.review.has(y)) cache.review.set(y, await getJSON(`data/review/${y}.json`));
+/**
+ * تحلیل‌های حقوقی را می‌آورد و در یک نگاشت id → تحلیل ادغام می‌کند.
+ * کلید هر فایل یا «۱۴۰۳» است (مرکز) یا «k۱۴۰۳» (کانون).
+ */
+export async function review(keys) {
+  const wanted = [...new Set(keys)];
+  await Promise.all(wanted.map(async k => {
+    if (!cache.review.has(k)) cache.review.set(k, await getJSON(`data/review/${k}.json`));
   }));
   return Object.assign({}, ...wanted.map(y => cache.review.get(y)));
 }
