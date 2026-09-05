@@ -58,8 +58,7 @@ function goHome() {
     askCount(all().filter(q => q.source === 'kanoon' && +q.year === y).sort((a, b) => a.q - b.q),
              `کانون وکلا ${fa(y)}`, 'kanoon-year');
   });
-  on(app, '[data-ksubject]', 'click', e =>
-    startUnit(e.currentTarget.dataset.ksubject, e.currentTarget.dataset.uy, true));
+  on(app, '[data-kgroup]', 'click', e => showSubject(+e.currentTarget.dataset.kgroup, true));
   if (resume) {
     $('#resumeBtn').addEventListener('click', () => { s = resume; renderExam(); });
     $('#dropBtn').addEventListener('click', () => { session.clear(); goHome(); });
@@ -73,12 +72,18 @@ function goHome() {
   toTop();
 }
 
-function showSubject(gi) {
+function showSubject(gi, kanoon) {
   homeBtn.classList.remove('hidden');
-  app.innerHTML = view.subject(gi, unitCounts, meta.unitYears);
+  app.innerHTML = kanoon ? view.kanoonSubject(gi, meta.kanoon)
+                         : view.subject(gi, unitCounts, meta.unitYears);
   $('#backHome').addEventListener('click', goHome);
   on(app, '[data-unit]', 'click', e =>
     startUnit(e.currentTarget.dataset.unit, e.currentTarget.dataset.uy, false));
+  // درسِ کلیِ کانون با courseUnit جدا می‌شود، واحد ریزش با فهرست units
+  on(app, '[data-ksubject]', 'click', e =>
+    startUnit(e.currentTarget.dataset.ksubject, e.currentTarget.dataset.uy, true));
+  on(app, '[data-kunit]', 'click', e =>
+    startUnit(e.currentTarget.dataset.kunit, e.currentTarget.dataset.uy, true, true));
   toTop();
 }
 
@@ -86,8 +91,9 @@ function showSubject(gi) {
  * شروع آزمونِ یک واحد درسی. اگر سالی خواسته شده باشد فقط همان دوره،
  * وگرنه همهٔ سال‌ها پشت سر هم به ترتیب دفترچه.
  */
-function startUnit(unit, uy, kanoon) {
-  const pool = all().filter(q => (q.source === 'kanoon') === kanoon && q.courseUnit === unit);
+function startUnit(unit, uy, kanoon, fine) {
+  const has = q => (fine ? (q.units || []).includes(unit) : q.courseUnit === unit);
+  const pool = all().filter(q => (q.source === 'kanoon') === kanoon && has(q));
   const label = kanoon ? `${unit} — کانون` : unit;
   if (uy && uy !== 'all') {
     const y = +uy;

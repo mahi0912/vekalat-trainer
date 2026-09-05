@@ -34,11 +34,45 @@ OUT = SITE / "data"
 QUIZ_FIELDS = ("id", "year", "q", "courseUnit", "answer", "questionText", "options", "sourcePages")
 # فیلدهای مخصوص سؤالات کانون: مبدأ و درجه اعتبار کلید
 KANOON_FIELDS = ("source", "keyTrust", "acceptedAnswers", "subjectName", "tags")
+# «units» هم به سطر افزوده می‌شود: واحدهای درسی ریزِ سؤال کانون
 
 # تحلیل‌های بازنویسی‌شده که روی نسخه قالبی قدیمی سوار می‌شوند
 REWRITTEN = SITE / "analyses"
 REWRITTEN_KANOON = SITE / "analyses-kanoon"
 UNIT_FIX = SITE / "unit-corrections.json"
+
+
+# نگاشت برچسب سؤالات کانون به همان واحدهای درسی بانک مرکز، تا هر دو بانک
+# یک زبان مشترک داشته باشند و بشود یک واحد را در هر دو تمرین کرد.
+KANOON_UNIT = {
+    "مدنی ۱": "مدنی ۱ — اشخاص، اهلیت و محجورین",
+    "مدنی ۲": "مدنی ۲ — اموال و مالکیت",
+    "مدنی ۳": "مدنی ۳ — قواعد عمومی قراردادها",
+    "مدنی ۴": "مدنی ۴ — الزامات خارج از قرارداد",
+    "مدنی ۵": "مدنی ۵ — خانواده",
+    "مدنی ۶": "مدنی ۶ — عقود معین ۱",
+    "مدنی ۷": "مدنی ۷ — عقود معین ۲",
+    "مدنی ۸": "مدنی ۸ — شفعه، وصیت و ارث",
+    "دادرسی مدنی ۱": "آیین دادرسی مدنی ۱ — کلیات، صلاحیت و اقامه دعوا",
+    "دادرسی مدنی ۲": "آیین دادرسی مدنی ۲ — دادرسی، ادله، تأمین و اجرا",
+    "دادرسی مدنی ۳": "آیین دادرسی مدنی ۳ — آراء، اعتراض و داوری",
+    "کیفری ۱": "آیین دادرسی کیفری ۱ — کلیات، دعوای عمومی و صلاحیت",
+    "کیفری ۲": "آیین دادرسی کیفری ۲ — تحقیقات مقدماتی و تأمین",
+    "کیفری ۳": "آیین دادرسی کیفری ۳ — دادگاه، اعتراض و اجرای احکام",
+    "تجارت ۱": "تجارت ۱ — تاجر و اعمال تجاری",
+    "تجارت ۲": "تجارت ۲ — شرکت‌های تجاری",
+    "تجارت ۳": "تجارت ۳ — اسناد تجاری و چک",
+    "تجارت ۴": "تجارت ۴ — ورشکستگی",
+    "جزای عمومی ۱": "جزای عمومی ۱ — اصول و مسئولیت کیفری",
+    "جزای عمومی ۲": "جزای عمومی ۲ — مراحل ارتکاب، شرکت، معاونت و تعدد",
+    "جزای عمومی ۳": "جزای عمومی ۳ — مجازات‌ها و نهادهای ارفاقی",
+    "جزای اختصاصی ۱": "جزای اختصاصی ۱ — جرایم علیه اشخاص",
+    "جزای اختصاصی ۲": "جزای اختصاصی ۲ — جرایم علیه اموال و مالکیت",
+    "جزای اختصاصی ۳": "جزای اختصاصی ۳ — امنیت، آسایش و جرایم اداری",
+    # این دو درس در کانون شماره‌گذاری واحد ندارند و یکجا طرح می‌شوند
+    "اصول و متون فقه": "اصول استنباط و متون فقه — همه مباحث",
+    "حقوق اساسی": "حقوق اساسی — همه اصول",
+}
 
 
 def load_unit_corrections() -> dict:
@@ -108,6 +142,10 @@ def main() -> int:
         for f in KANOON_FIELDS:
             if item.get(f) is not None:
                 row[f] = item[f]
+        if item.get("source") == "kanoon":
+            units = [KANOON_UNIT[t] for t in (item.get("tags") or []) if t in KANOON_UNIT]
+            if units:
+                row["units"] = units
         questions.append(row)
 
         new = rewritten.get(qid)
@@ -167,11 +205,13 @@ def main() -> int:
     markaz = [r for r in questions if r.get("source") != "kanoon"]
     kanoonq = [r for r in questions if r.get("source") == "kanoon"]
 
-    def unit_years(rows):
+    def unit_years(rows, key="courseUnit"):
         """نگاشت واحد درسی → {سال: تعداد} تا بشود درس یک سالِ خاص را جدا آزمون داد."""
         out: dict = {}
         for r in rows:
-            out.setdefault(r["courseUnit"], Counter())[int(r["year"])] += 1
+            names = r.get(key) if key == "units" else [r[key]]
+            for u in (names or []):
+                out.setdefault(u, Counter())[int(r["year"])] += 1
         return {u: {str(y): c[y] for y in sorted(c)} for u, c in sorted(out.items())}
 
     def counts(rows):
@@ -180,7 +220,8 @@ def main() -> int:
         return {"total": len(rows),
                 "years": {str(k): y[k] for k in sorted(y)},
                 "units": dict(sorted(u.items())),
-                "unitYears": unit_years(rows)}
+                "unitYears": unit_years(rows),
+                "fineUnitYears": unit_years(rows, "units")}
 
     units = Counter(r["courseUnit"] for r in markaz)
     years = Counter(int(r["year"]) for r in markaz)

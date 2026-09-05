@@ -258,3 +258,10 @@ details.src[open] > summary::before { content: "▾ "; }
   .card { padding: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* برچسب بانک — تا در نگاه اول معلوم باشد کدام کارت کانون است و کدام مرکز */
+.srctag{margin:0 0 2px;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+  color:var(--muted);text-transform:none}
+.card.src-k{border-inline-start:4px solid var(--accent)}
+.card.src-m{border-inline-start:4px solid var(--muted)}
+.card.src-k .srctag{color:var(--accent)}

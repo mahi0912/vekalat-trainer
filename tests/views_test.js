@@ -35,11 +35,26 @@ ok('subject: دکمه سال جدا هم هست', subjHtml.indexOf('data-uy="139
 ok('subject: بدون سال‌بندی هم نمی‌شکند',
    (subject(0, unitCounts).match(/data-uy="all"/g) || []).length === 8);
 
-// ---------- دوره‌های کانون در صفحه خانه ----------
+// ---------- تفکیک دو بانک ----------
+// شکایت واقعی: در صفحه خانه معلوم نبود کدام سؤال کانون است و کدام مرکز
 var homeHtml = home({ meta: F.meta, unitCounts: unitCounts, resume: null });
-if (F.meta.kanoon && F.meta.kanoon.unitYears) {
-  ok('home: درس کانون دکمه سال دارد', homeHtml.indexOf('data-ksubject=') > -1 && homeHtml.indexOf('data-uy=') > -1);
-}
+ok('home: کارت کانون برچسب منبع دارد', homeHtml.indexOf('کانون وکلای دادگستری') > -1);
+ok('home: کارت مرکز برچسب منبع دارد', homeHtml.indexOf('مرکز وکلای قوه قضاییه') > -1);
+ok('home: هر دو کارت رنگ منبع دارند',
+   homeHtml.indexOf('card src-k') > -1 && homeHtml.indexOf('card src-m') > -1);
+ok('home: هر بانک مسیر موضوعی خودش را دارد',
+   homeHtml.indexOf('data-kgroup=') > -1 && homeHtml.indexOf('data-subject=') > -1);
+
+// ---------- صفحه درس کانون: تفکیک واحدی ----------
+var kSubj = kanoonSubject(0, F.meta.kanoon);   // حقوق مدنی
+html('kanoonSubject', kSubj);
+ok('kanoonSubject: ۸ واحد مدنی', (kSubj.match(/data-kunit=/g) || []).length >= 8);
+ok('kanoonSubject: کل درس هم هست', kSubj.indexOf('data-ksubject="مدنی"') > -1);
+ok('kanoonSubject: دکمه سال جدا دارد', kSubj.indexOf('data-uy="1398"') > -1);
+var kFiqh = kanoonSubject(5, F.meta.kanoon);   // فقه، که در کانون واحد شماره‌دار ندارد
+ok('kanoonSubject: فقه کانون جا نمی‌ماند', kFiqh.indexOf('data-kunit=') > -1);
+var kSabt = kanoonSubject(6, F.meta.kanoon);   // ثبت: کانون این درس را ندارد
+ok('kanoonSubject: درس نداشته خالی می‌ماند', kSabt.indexOf('data-kunit=') === -1);
 
 // ---------- کلید فایل تحلیل ----------
 // باگ واقعی: تحلیل‌های کانون در data/review/k<سال>.json هستند نه <سال>.json

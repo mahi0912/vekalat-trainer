@@ -1,6 +1,7 @@
 /** ساخت HTML صفحه‌ها. هیچ نمایی مستقیماً به داده دست نمی‌زند؛ همه چیز پارامتر می‌گیرد. */
 import { esc, fa, pct } from './util.js';
-import { COURSE_GROUPS, YEARS, KANOON_SUBJECTS, KANOON_YEARS, KEY_TRUST } from './groups.js';
+import { COURSE_GROUPS, YEARS, KANOON_SUBJECTS, KANOON_YEARS, KANOON_GROUP_SUBJECT,
+         KANOON_EXTRA_UNITS, KEY_TRUST } from './groups.js';
 import { insights, keyOf, PENALTY } from './state.js';
 
 /* ---------- خانه ---------- */
@@ -61,10 +62,29 @@ export function home({ meta, unitCounts, resume, mistakes }) {
       </div>
     </div>` : '';
 
+  const kanoonGroups = !kn ? '' : COURSE_GROUPS.map(([name], gi) => {
+    const sub = KANOON_GROUP_SUBJECT[gi];
+    const n = sub ? (kn.units[sub] || 0) : 0;
+    if (!n) return '';
+    const fine = COURSE_GROUPS[gi][1].concat(KANOON_EXTRA_UNITS[gi] || [])
+      .filter(u => (kn.fineUnitYears || {})[u]).length;
+    return `<button type="button" class="btn" data-kgroup="${gi}">
+              <span class="unit">${esc(name)}</span>
+              <span class="count">${fa(n)} سؤال — ${fa(fine)} واحد</span>
+            </button>`;
+  }).join('');
+
   const kanoonCard = kn ? `
-    <div class="card">
-      <h2>آزمون کانون وکلای دادگستری</h2>
-      <p class="muted" style="margin:4px 0 12px">${fa(kn.total)} سؤال از ${fa(Object.keys(kn.years).length)} دوره. جدا از بانک مرکز نگه داشته شده‌اند؛ کلید بعضی سال‌ها رسمی و بعضی پیشنهادی است.</p>
+    <div class="card src-k">
+      <p class="srctag">بانک ۱ — کانون وکلای دادگستری</p>
+      <h2>آزمون کانون وکلا</h2>
+      <div class="hero">
+        <div><b>${fa(kn.total)}</b><small>سؤال</small></div>
+        <div><b>${fa(Object.keys(kn.years).length)}</b><small>دوره</small></div>
+        <div><b>${fa(Object.keys(kn.fineUnitYears || {}).length)}</b><small>واحد درسی</small></div>
+      </div>
+      <h2 style="margin-top:20px;font-size:1rem">آزمون کاملِ یک دوره</h2>
+      <p class="muted" style="margin:6px 0 12px">تمام سؤالات آن سال، به ترتیب دفترچه.</p>
       <div class="grid">
         ${KANOON_YEARS.filter(y => kn.years[y]).map(y =>
           `<button type="button" class="btn" data-kyear="${y}">
@@ -72,29 +92,28 @@ export function home({ meta, unitCounts, resume, mistakes }) {
              <span class="count">${fa(kn.years[y])} سؤال</span>
            </button>`).join('')}
       </div>
-      <h2 style="margin-top:22px;font-size:1rem">درس‌به‌درس کانون</h2>
-      <p class="muted" style="margin:6px 0 14px">هر دوره را جدا آزمون بده، یا همه سال‌های یک درس را با هم.</p>
-      ${KANOON_SUBJECTS.filter(u => kn.units[u])
-        .map(u => yearRow(u, (kn.unitYears || {})[u], 'data-ksubject')).join('')}
+      <h2 style="margin-top:22px;font-size:1rem">تمرین موضوعی کانون</h2>
+      <p class="muted" style="margin:6px 0 12px">درس را بزن تا واحدهایش باز شود؛ بعد هر دوره را جدا یا همه را با هم.</p>
+      <div class="grid">${kanoonGroups}</div>
     </div>` : '';
 
   return `
     ${resumeCard}
     ${mistakeCard}
     ${kanoonCard}
-    <div class="card">
+    <div class="card src-m">
+      <p class="srctag">بانک ۲ — مرکز وکلای قوه قضاییه</p>
+      <h2>آزمون مرکز وکلا</h2>
       <div class="hero">
-        <div><b>${fa(meta.total)}</b><small>سؤال واقعی</small></div>
-        <div><b>${fa(YEARS.length)}</b><small>دوره آزمون</small></div>
+        <div><b>${fa(meta.total)}</b><small>سؤال</small></div>
+        <div><b>${fa(YEARS.length)}</b><small>دوره</small></div>
         <div><b>${fa(Object.keys(meta.units).length)}</b><small>واحد درسی</small></div>
       </div>
-    </div>
-    <div class="card"><h2>آزمون جامع سالانه</h2>
-      <p class="muted" style="margin:0 0 12px">تمام سؤالات یک دوره، به ترتیب دفترچه.</p>
+      <h2 style="margin-top:20px;font-size:1rem">آزمون کاملِ یک دوره</h2>
+      <p class="muted" style="margin:6px 0 12px">تمام سؤالات آن سال، به ترتیب دفترچه.</p>
       <div class="grid">${years}</div>
-    </div>
-    <div class="card"><h2>تمرین موضوعی</h2>
-      <p class="muted" style="margin:0 0 12px">یک واحد درسی را انتخاب کن؛ بعد می‌توانی همه سال‌ها را با هم یا هر دوره را جدا آزمون بدهی.</p>
+      <h2 style="margin-top:22px;font-size:1rem">تمرین موضوعی مرکز</h2>
+      <p class="muted" style="margin:6px 0 12px">درس را بزن تا واحدهایش باز شود؛ بعد هر دوره را جدا یا همه را با هم.</p>
       <div class="grid">${subjects}</div>
     </div>`;
 }
@@ -104,10 +123,32 @@ export function subject(gi, unitCounts, unitYears) {
   const blocks = units
     .filter(u => unitCounts[u])
     .map(u => yearRow(u, (unitYears || {})[u], 'data-unit')).join('');
-  return `<div class="card">
+  return `<div class="card src-m">
             <button type="button" class="btn ghost" id="backHome" style="margin-bottom:14px">→ بازگشت به درس‌ها</button>
+            <p class="srctag">مرکز وکلای قوه قضاییه</p>
             <h2>${esc(name)}</h2>
             <p class="muted" style="margin:4px 0 14px">هر دوره را جدا آزمون بده، یا همه سال‌های یک واحد را با هم.</p>
+            ${blocks}
+          </div>`;
+}
+
+/** همان صفحه درس اما برای بانک کانون: اول کل درس، بعد واحد به واحد. */
+export function kanoonSubject(gi, kn) {
+  const [name] = COURSE_GROUPS[gi];
+  const sub = KANOON_GROUP_SUBJECT[gi];
+  const whole = sub && kn.units[sub]
+    ? `<p class="muted" style="margin:4px 0 8px">کل درس، بدون تفکیک واحد:</p>
+       ${yearRow(sub, (kn.unitYears || {})[sub], 'data-ksubject')}
+       <p class="muted" style="margin:18px 0 8px">یا واحد به واحد:</p>`
+    : '';
+  const blocks = COURSE_GROUPS[gi][1].concat(KANOON_EXTRA_UNITS[gi] || [])
+    .filter(u => (kn.fineUnitYears || {})[u])
+    .map(u => yearRow(u, kn.fineUnitYears[u], 'data-kunit')).join('');
+  return `<div class="card src-k">
+            <button type="button" class="btn ghost" id="backHome" style="margin-bottom:14px">→ بازگشت به درس‌ها</button>
+            <p class="srctag">کانون وکلای دادگستری</p>
+            <h2>${esc(name)}</h2>
+            ${whole}
             ${blocks}
           </div>`;
 }
