@@ -30,7 +30,7 @@ export const KANOON_EXTRA_UNITS = {
   7: ['حقوق اساسی — همه اصول'],
 };
 
-export const KANOON_YEARS = [1398, 1400, 1402, 1403, 1404];
+export const KANOON_YEARS = [1390, 1391, 1394, 1398, 1400, 1402, 1403, 1404];
 
 /** درجه اعتبار کلید کانون → برچسبی که به کاربر نشان داده می‌شود. */
 export const KEY_TRUST = {
