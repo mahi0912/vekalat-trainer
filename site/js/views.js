@@ -1,5 +1,5 @@
 /** ساخت HTML صفحه‌ها. هیچ نمایی مستقیماً به داده دست نمی‌زند؛ همه چیز پارامتر می‌گیرد. */
-import { esc, fa, pct } from './util.js';
+import { esc, fa, pct, escB } from './util.js';
 import { COURSE_GROUPS, YEARS, KANOON_SUBJECTS, KANOON_YEARS, KANOON_GROUP_SUBJECT,
          KANOON_EXTRA_UNITS, KEY_TRUST } from './groups.js';
 import { insights, keyOf, PENALTY } from './state.js';
@@ -357,7 +357,7 @@ export function reviewCard(q, picked, analysis) {
     return `<div class="an ${cls}">
               <b>گزینه ${fa(i)}${marks.length ? ' — ' + marks.join(' · ') : ''}</b>
               <div style="color:var(--muted);margin-bottom:4px">${esc(q.options[i - 1] || '')}</div>
-              ${esc(a.options[i - 1] || 'تحلیل این گزینه هنوز بازنویسی نشده است.')}
+              ${escB(a.options[i - 1] || 'تحلیل این گزینه هنوز بازنویسی نشده است.')}
             </div>`;
   }).join('');
 
@@ -365,11 +365,11 @@ export function reviewCard(q, picked, analysis) {
     <div class="warning" style="margin-bottom:10px">
       <b>کلید امروز با کلید دفترچه فرق دارد.</b> کلید رسمی دفترچه در سال ${fa(q.year)} گزینه ${fa(keyExam)} بود،
       اما بر مبنای قانون امروز پاسخ صحیح گزینه ${fa(keyToday)} است.
-      ${a.changeNote ? '<br>' + esc(a.changeNote) : ''}
+      ${a.changeNote ? '<br>' + escB(a.changeNote) : ''}
       <br><small>نمره تو بر مبنای قانون امروز حساب شده است.</small>
     </div>` : (a.changeNote ? `
     <details style="margin-bottom:10px"><summary class="muted" style="cursor:pointer">وضعیت قانون تا امروز</summary>
-      <p class="muted" style="margin:8px 0 0">${esc(a.changeNote)}</p></details>` : '');
+      <p class="muted" style="margin:8px 0 0">${escB(a.changeNote)}</p></details>` : '');
 
   const badge = a.status !== 'rewritten'
     ? '<span class="pill">تحلیل قالبی قدیمی</span>'
@@ -388,8 +388,8 @@ export function reviewCard(q, picked, analysis) {
     <p class="qtext">${esc(q.questionText)}</p>
     ${changeBanner}
     ${a.legalBasis || a.summary ? `<div class="legal">
-      ${a.legalBasis ? `<b>مستند قانونی:</b> ${esc(a.legalBasis)}<br>` : ''}
-      ${a.summary ? `<b>جمع‌بندی:</b> ${esc(a.summary)}` : ''}
+      ${a.legalBasis ? `<b>مستند قانونی:</b> ${escB(a.legalBasis)}<br>` : ''}
+      ${a.summary ? `<b>جمع‌بندی:</b> ${escB(a.summary)}` : ''}
     </div>` : ''}
     ${rows}
     ${(a.sources && a.sources.length) ? `<p class="muted" style="margin:10px 0 0">

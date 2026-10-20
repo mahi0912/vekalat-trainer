@@ -140,3 +140,21 @@ ok('بدون تغییر بنر ندارد',        rleg.indexOf('کلید امر
 var sch = score(qch ? [qch] : [], { });
 var rr = results(sch, 'تست');
 ok('خلاصه نتیجه هشدار می‌دهد', rr.indexOf('پاسخ صحیح امروز با کلید دفترچه فرق دارد') > -1);
+
+// تگ <b> در تحلیل باید پررنگ شود، نه این که خودِ تگ دیده شود
+var rb = reviewCard(qs[1], 0, {
+  status: 'rewritten', confidence: 'high',
+  legalBasis: 'ماده <b>۱۰</b> ق.م', summary: 'جمع‌بندی <b>مهم</b>.',
+  keyAtExam: qs[1].answer, keyToday: qs[1].answer,
+  options: ['گزینه <b>اول</b> غلط است.', 'دو', 'سه', 'چهار'],
+});
+ok('تگ b در گزینه رندر می‌شود',  rb.indexOf('گزینه <b>اول</b> غلط') > -1);
+ok('تگ b در جمع‌بندی رندر می‌شود', rb.indexOf('جمع‌بندی <b>مهم</b>') > -1);
+ok('تگ خام جلوی کاربر نمی‌افتد',  rb.indexOf('&lt;b&gt;') === -1);
+
+// هر تگ دیگری باید بی‌اثر و فرار داده شود
+var rx = reviewCard(qs[1], 0, {
+  status: 'legacy', legalBasis: '', summary: '<img src=x onerror=1>',
+  keyAtExam: qs[1].answer, keyToday: qs[1].answer, options: ['۱','۲','۳','۴'],
+});
+ok('تگ غیرمجاز اجرا نمی‌شود', rx.indexOf('<img src=x') === -1 && rx.indexOf('&lt;img src=x') > -1);

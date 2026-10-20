@@ -13,6 +13,7 @@
 """
 from __future__ import annotations
 
+import re
 import json
 import sys
 from pathlib import Path
@@ -131,6 +132,13 @@ def main() -> int:
             if entry.get("lawChanged") and not entry.get("changeNote"):
                 fail(f"سؤال {qid}: قانون تغییر کرده ولی توضیحی ثبت نشده")
 
+            # در نمایش تنها <b> زنده می‌ماند (util.escB)؛ هر تگ دیگری
+            # به‌صورت متن خام جلوی چشم کاربر می‌افتد
+            for field in ("summary", "legalBasis", "changeNote"):
+                check_tags(qid, field, entry.get(field) or "")
+            for i, text in enumerate(entry.get("options", []), 1):
+                check_tags(qid, f"گزینه {i}", text or "")
+
             if entry.get("status") == "rewritten":
                 rewritten_count[0] += 1
                 for i, text in enumerate(entry.get("options", []), 1):
@@ -159,6 +167,18 @@ def main() -> int:
         print(f"نیازمند بازبینی حقوق‌دان ({len(needs_check)}): " + ", ".join(needs_check))
     print("توزیع سالانه: " + ", ".join(f"{y}={len(v)}" for y, v in sorted(by_year.items())))
     return report()
+
+
+TAG = re.compile(r"<[^>]*>")
+
+
+def check_tags(qid: str, field: str, text: str) -> None:
+    """هیچ تگی جز <b> و </b> در متن تحلیل مجاز نیست."""
+    bad = {t for t in TAG.findall(text) if t not in ("<b>", "</b>")}
+    if bad:
+        fail(f"سؤال {qid} ({field}): تگ ناشناخته {', '.join(sorted(bad))}")
+    elif text.count("<b>") != text.count("</b>"):
+        fail(f"سؤال {qid} ({field}): تگ <b> بسته نشده")
 
 
 def report() -> int:
