@@ -1,7 +1,7 @@
 /** ساخت HTML صفحه‌ها. هیچ نمایی مستقیماً به داده دست نمی‌زند؛ همه چیز پارامتر می‌گیرد. */
 import { esc, fa, pct, escB } from './util.js';
 import { COURSE_GROUPS, YEARS, KANOON_SUBJECTS, KANOON_YEARS, KANOON_GROUP_SUBJECT,
-         KANOON_EXTRA_UNITS, KEY_TRUST } from './groups.js';
+         KANOON_EXTRA_UNITS, KEY_TRUST, yearName } from './groups.js';
 import { insights, keyOf, PENALTY } from './state.js';
 
 /* ---------- خانه ---------- */
@@ -16,7 +16,7 @@ function yearRow(unit, byYear, attr) {
       <div class="yrs"><button type="button" class="ybtn all" ${attr}="${esc(unit)}" data-uy="all">همه سال‌ها</button></div>
     </div>`;
   const one = y => `<button type="button" class="ybtn" ${attr}="${esc(unit)}" data-uy="${y}">
-      <b>${fa(y)}</b><small>${fa(byYear[y])}</small></button>`;
+      <b>${yearName(y) || fa(y)}</b><small>${fa(byYear[y])}</small></button>`;
   return `<div class="ublock">
       <p class="uname">${esc(unit)} <small>${fa(total)} سؤال · ${fa(yrs.length)} دوره</small></p>
       <div class="yrs">
@@ -88,7 +88,7 @@ export function home({ meta, unitCounts, resume, mistakes }) {
       <div class="grid">
         ${KANOON_YEARS.filter(y => kn.years[y]).map(y =>
           `<button type="button" class="btn" data-kyear="${y}">
-             <span class="unit">کانون ${fa(y)}</span>
+             <span class="unit">${yearName(y) || 'کانون ' + fa(y)}</span>
              <span class="count">${fa(kn.years[y])} سؤال</span>
            </button>`).join('')}
       </div>
@@ -217,7 +217,7 @@ export function exam(q, { index, total, picked, flagged, answered, elapsed }) {
         <span class="pill accent">${esc(q.courseUnit)}</span>
         ${q.source === 'kanoon' ? `<span class="pill">کانون وکلا</span>` : ''}
         ${trustPill(q)}
-        <span class="pill">سال ${fa(q.year)}</span>
+        <span class="pill">${yearName(q.year) || 'سال ' + fa(q.year)}</span>
         <span class="pill">سؤال دفترچه ${fa(q.q)}</span>
         <span class="pill" style="margin-inline-start:auto">⏱ ${esc(elapsed)}</span>
       </div>
@@ -380,7 +380,7 @@ export function reviewCard(q, picked, analysis) {
   return `<div class="card">
     <div class="qhead">
       <span class="pill accent">${esc(q.courseUnit)}</span>
-      <span class="pill">سال ${fa(q.year)}</span>
+      <span class="pill">${yearName(q.year) || 'سال ' + fa(q.year)}</span>
       <span class="pill">سؤال ${fa(q.q)}</span>
       ${badge}
       <span class="pill" style="margin-inline-start:auto">پاسخ تو: ${picked ? fa(picked) : '—'} | کلید: ${fa(keyToday)}${changed ? ` (دفترچه: ${fa(keyExam)})` : ''}</span>
