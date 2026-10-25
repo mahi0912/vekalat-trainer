@@ -201,6 +201,21 @@ const sourceBlock = q => `
       `<img class="pageimg" loading="lazy" decoding="async" alt="صفحه دفترچه" src="${esc(p)}">`).join('')}
   </div>`;
 
+/** صفحهٔ توقف: سؤال پنهان می‌ماند تا وقفه واقعاً وقفه باشد. */
+export function paused(title, elapsed, answered, total) {
+  return `
+    <div class="card" style="text-align:center;padding:38px 24px">
+      <p style="font-size:2.6rem;margin:0 0 8px">⏸</p>
+      <h2 style="margin:0 0 6px">آزمون متوقف است</h2>
+      <p class="muted" style="margin:0 0 4px">${esc(title)}</p>
+      <p class="muted" style="margin:0 0 20px">${fa(answered)} از ${fa(total)} پاسخ ثبت شده · ⏱ ${esc(elapsed)}</p>
+      <button type="button" class="btn primary" id="resumeBtn">ادامهٔ آزمون</button>
+      <p class="muted" style="margin:16px 0 0;font-size:.9rem">
+        تا وقتی متوقف است ساعت نمی‌رود و سؤال دیده نمی‌شود.
+      </p>
+    </div>`;
+}
+
 export function exam(q, { index, total, picked, flagged, answered, elapsed }) {
   const progress = total ? (index + 1) / total * 100 : 0;
   const options = (q.options || []).map((text, i) => {
@@ -219,7 +234,8 @@ export function exam(q, { index, total, picked, flagged, answered, elapsed }) {
         ${trustPill(q)}
         <span class="pill">${yearName(q.year) || 'سال ' + fa(q.year)}</span>
         <span class="pill">سؤال دفترچه ${fa(q.q)}</span>
-        <span class="pill" style="margin-inline-start:auto">⏱ ${esc(elapsed)}</span>
+        <span class="pill" id="timer" style="margin-inline-start:auto">⏱ ${esc(elapsed)}</span>
+        <button type="button" class="pill pausebtn" id="pauseBtn" title="توقف آزمون">⏸ توقف</button>
       </div>
       <div class="progress" role="progressbar" aria-valuenow="${index + 1}" aria-valuemin="1" aria-valuemax="${total}">
         <i style="width:${progress}%"></i>
@@ -288,7 +304,49 @@ function insightBlock(s) {
     </div>`;
 }
 
-export function results(s, title, md) {
+/** کارنامهٔ درس‌به‌درس. درصد خالص می‌تواند منفی شود، پس همان‌طور نشان داده می‌شود. */
+function cardTable(sc) {
+  if (!sc.subjects || sc.subjects.length < 2) return '';
+  const rows = sc.subjects.map(u => `
+    <tr>
+      <td><b>${esc(u.name)}</b></td>
+      <td>${fa(u.total)}</td>
+      <td style="color:var(--good)">${fa(u.correct)}</td>
+      <td style="color:var(--bad)">${fa(u.wrong)}</td>
+      <td>${fa(u.blank)}</td>
+      <td><b>${pct(u.net)}٪</b></td>
+    </tr>`).join('');
+  return `
+    <div class="card">
+      <h2>کارنامه، درس به درس</h2>
+      <p class="muted" style="margin:6px 0 12px">درصد خالص = (درست − غلط×⅓) ÷ کل سؤالِ همان درس.</p>
+      <div class="tablewrap">
+        <table class="report">
+          <thead><tr><th>درس</th><th>سؤال</th><th>درست</th><th>غلط</th><th>نزده</th><th>خالص</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/** جعبهٔ گزارشِ قابل‌کپی — همان چیزی که برای تحلیل فرستاده می‌شود. */
+function reportBox(text) {
+  if (!text) return '';
+  return `
+    <div class="card">
+      <h2>گزارش برای فرستادن</h2>
+      <p class="muted" style="margin:6px 0 12px">
+        این را کپی کن و برای کلود بفرست تا الگوی اشتباه‌هایت را دربیاورد و ببیند کدام اشتباه تکرار شده.
+      </p>
+      <div class="row" style="margin-bottom:10px">
+        <button type="button" class="btn primary" id="copyReport">کپی گزارش</button>
+        <span class="muted" id="copyNote" style="align-self:center"></span>
+      </div>
+      <pre class="report-text" id="reportText">${esc(text)}</pre>
+    </div>`;
+}
+
+export function results(s, title, md, reportText) {
   const net = Math.max(0, s.net);
   const mistakeNote = md && (md.added || md.cleared) ? `
     <div class="card" style="margin-top:14px">
@@ -324,6 +382,10 @@ export function results(s, title, md) {
         هر ${fa(Math.round(1 / PENALTY))} پاسخ غلط یک پاسخ صحیح را خنثی می‌کند.
       </p>
     </div>
+
+    ${cardTable(s)}
+
+    ${reportBox(reportText)}
 
     ${insightBlock(s)}
 

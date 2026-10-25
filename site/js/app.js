@@ -3,6 +3,8 @@ import * as data from './data.js';
 import * as session from './state.js';
 import * as view from './views.js';
 import * as mistakes from './mistakes.js';
+import * as history from './history.js';
+import * as report from './report.js';
 import { COURSE_GROUPS } from './groups.js';
 import { esc, fa, $, on, toTop, skeleton } from './util.js';
 
@@ -23,7 +25,7 @@ const reviewKey = q => (q.source === 'kanoon' ? 'k' : '') + q.year;
 /* ---------- زمان ---------- */
 
 function elapsed(sess) {
-  const sec = Math.floor(((sess.finishedAt || Date.now()) - sess.startedAt) / 1000);
+  const sec = Math.floor(session.elapsedMs(sess) / 1000);
   const p = n => fa(String(n).padStart(2, '0'));
   const h = Math.floor(sec / 3600);
   return (h ? `${p(h)}:` : '') + `${p(Math.floor(sec / 60) % 60)}:${p(sec % 60)}`;
@@ -33,8 +35,9 @@ function startTicker() {
   stopTicker();
   ticker = setInterval(() => {
     const el = document.getElementById('timer');
-    if (el && s) el.textContent = `⏱ ${elapsed(s)}`;
-    else stopTicker();
+    if (!el || !s) { stopTicker(); return; }
+    if (session.isPaused(s)) return;
+    el.textContent = `⏱ ${elapsed(s)}`;
   }, 1000);
 }
 const stopTicker = () => { if (ticker) { clearInterval(ticker); ticker = null; } };
@@ -172,6 +175,16 @@ function start(qs, title, mode) {
 
 function renderExam() {
   const qs = qsOf(s);
+  if (session.isPaused(s)) {
+    stopTicker();
+    app.innerHTML = view.paused(s.title, elapsed(s), Object.keys(s.ans).length, qs.length);
+    $('#resumeBtn').addEventListener('click', () => {
+      session.resume(s);
+      persistAndRender();
+    });
+    toTop();
+    return;
+  }
   const q = qs[s.i];
   app.innerHTML = view.exam(q, {
     index: s.i,
@@ -181,9 +194,6 @@ function renderExam() {
     answered: Object.keys(s.ans).length,
     elapsed: elapsed(s),
   });
-  // شناسه برای به‌روزرسانی ثانیه‌ای بدون رندر دوباره کل صفحه
-  app.querySelector('.qhead .pill:last-child').id = 'timer';
-
   on(app, '[data-pick]', 'click', e => {
     const pick = +e.currentTarget.dataset.pick;
     if (s.ans[q.id] === pick) delete s.ans[q.id]; else s.ans[q.id] = pick;
@@ -198,6 +208,7 @@ function renderExam() {
   $('#nextBtn').addEventListener('click', () => move(1));
   $('#finishBtn').addEventListener('click', finish);
   $('#mapBtn').addEventListener('click', toggleMap);
+  $('#pauseBtn').addEventListener('click', () => { session.pause(s); persistAndRender(); });
 
   startTicker();
   toTop();
@@ -228,6 +239,7 @@ function finish() {
     ? `${fa(left)} سؤال بی‌پاسخ مانده است. آزمون تمام شود؟`
     : 'آزمون تمام شود و تحلیل نمایش داده شود؟';
   if (!confirm(msg)) return;
+  session.resume(s);
   s.finishedAt = Date.now();
   session.save(s);
   renderResults();
@@ -241,8 +253,32 @@ async function renderResults() {
   const sc = session.score(qs, s.ans);
   // ثبت در دفترچه اشتباهات: غلط‌ها اضافه، درست‌ها حذف. بی‌پاسخ‌ها دست‌نخورده.
   const md = mistakes.apply(qs, s.ans, session.keyOf);
-  app.innerHTML = view.results(sc, s.title, md);
+
+  // گزارش متنی و ثبت در تاریخچه. تکرارِ اشتباه از آزمون‌های پیشین خوانده می‌شود،
+  // پس باید پیش از ثبتِ همین آزمون حساب شود.
+  const ms = session.elapsedMs(s);
+  const repeated = history.repeatedWrong();
+  const text = report.build(qs, s, sc, ms, repeated);
+  history.push(report.entry(qs, s, sc, ms));
+
+  app.innerHTML = view.results(sc, s.title, md, text);
   $('#resultHome').addEventListener('click', () => { session.clear(); goHome(); });
+
+  const copyBtn = $('#copyReport');
+  if (copyBtn) copyBtn.addEventListener('click', async () => {
+    const note = $('#copyNote');
+    try {
+      await navigator.clipboard.writeText(text);
+      note.textContent = 'کپی شد.';
+    } catch (_) {
+      // روی مرورگرهایی که اجازهٔ کلیپ‌بورد نمی‌دهند، دست‌کم متن را انتخاب می‌کنیم
+      const pre = $('#reportText');
+      const r = document.createRange(); r.selectNodeContents(pre);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      note.textContent = 'انتخاب شد — با Ctrl+C کپی کن.';
+    }
+    setTimeout(() => { note.textContent = ''; }, 4000);
+  });
   toTop();
 
   const list = $('#reviewList');

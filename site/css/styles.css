@@ -265,3 +265,20 @@ details.src[open] > summary::before { content: "▾ "; }
 .card.src-k{border-inline-start:4px solid var(--accent)}
 .card.src-m{border-inline-start:4px solid var(--muted)}
 .card.src-k .srctag{color:var(--accent)}
+
+/* ---------- توقف آزمون ---------- */
+.pill.pausebtn{cursor:pointer;font:inherit;font-size:.8rem;border:1px solid var(--border);
+  background:var(--card);color:var(--text);margin-inline-start:6px}
+.pill.pausebtn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- کارنامه و گزارش ---------- */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.report{border-collapse:collapse;width:100%;font-size:.93rem;min-width:26rem;
+  font-variant-numeric:tabular-nums}
+table.report th,table.report td{text-align:start;padding:8px 10px;border-bottom:1px solid var(--border)}
+table.report th{background:var(--soft,rgba(127,127,127,.08));font-weight:700;font-size:.85rem;white-space:nowrap}
+table.report tbody tr:last-child td{border-bottom:0}
+pre.report-text{white-space:pre-wrap;word-break:break-word;direction:rtl;text-align:start;
+  background:var(--soft,rgba(127,127,127,.08));border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;margin:0;font-family:inherit;font-size:.9rem;line-height:1.85;
+  max-height:22rem;overflow:auto}
