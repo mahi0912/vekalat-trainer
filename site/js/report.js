@@ -7,6 +7,7 @@
  */
 
 import { keyOf, subjectOf } from './state.js';
+import { weighted, WEIGHTS } from './simulate.js';
 
 const FA_D = '۰۱۲۳۴۵۶۷۸۹';
 const fa = v => String(v).replace(/\d/g, d => FA_D[+d]);
@@ -41,11 +42,14 @@ export function build(qs, s, sc, ms, rep = {}) {
   L.push(`تاریخ: ${stamp(s.finishedAt || Date.now())} · زمان: ${clock(ms)}`);
   L.push(`کل ${fa(sc.total)} | درست ${fa(sc.correct)} | غلط ${fa(sc.wrong)} | نزده ${fa(sc.blank)}`);
   L.push(`خام ${pct(sc.raw)}٪ | خالص ${pct(sc.net)}٪`);
+  const wgt = weighted(sc.subjects);
+  if (wgt) L.push(`با ضرایب کانون: ${pct(wgt)}٪  (نصاب آزاد ≈۴۵ · ایثارگری ≈۳۷)`);
 
   L.push('');
-  L.push('[درس‌ها] درس | درست/غلط/نزده | خالص');
+  L.push('[درس‌ها] درس | ضریب | درست/غلط/نزده | خالص');
   for (const u of sc.subjects) {
-    L.push(`${u.name} | ${fa(u.correct)}/${fa(u.wrong)}/${fa(u.blank)} | ${pct(u.net)}٪`);
+    const w = WEIGHTS[u.name] ? fa(WEIGHTS[u.name]) : '—';
+    L.push(`${u.name} | ${w} | ${fa(u.correct)}/${fa(u.wrong)}/${fa(u.blank)} | ${pct(u.net)}٪`);
   }
 
   const wrong = qs.filter(q => s.ans[q.id] && +s.ans[q.id] !== keyOf(q));

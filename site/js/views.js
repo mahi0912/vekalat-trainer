@@ -3,6 +3,7 @@ import { esc, fa, pct, escB } from './util.js';
 import { COURSE_GROUPS, YEARS, KANOON_SUBJECTS, KANOON_YEARS, KANOON_GROUP_SUBJECT,
          KANOON_EXTRA_UNITS, KEY_TRUST, yearName } from './groups.js';
 import { insights, keyOf, PENALTY } from './state.js';
+import { DURATIONS, WEIGHTS, weighted } from './simulate.js';
 
 /* ---------- خانه ---------- */
 
@@ -41,6 +42,21 @@ export function home({ meta, unitCounts, resume, mistakes }) {
               <span class="count">${fa(total)} سؤال — ${fa(units.length)} واحد</span>
             </button>`;
   }).join('');
+
+  const simCard = `
+    <div class="card">
+      <h2>آزمون شبیه‌سازی‌شدهٔ کانون</h2>
+      <p class="muted" style="margin:4px 0 12px">
+        ۱۴۰ سؤالِ <b>واقعی</b> از هشت دورهٔ کانون، با همان ساختارِ دفترچه: ۲۰ سؤال از هر درس،
+        به همان ترتیب، با ساعتِ شمارش معکوس و نمرهٔ وزنی. هر بار دفترچهٔ تازه‌ای چیده می‌شود.
+      </p>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        ${DURATIONS.map(d => `<button type="button" class="btn" data-sim="${d.min}">
+            <span class="unit">${esc(d.label.split('—')[0].trim())}</span>
+            <span class="count">${esc((d.label.split('—')[1] || '').trim())}</span>
+          </button>`).join('')}
+      </div>
+    </div>`;
 
   const mistakeCard = mistakes ? `
     <div class="card">
@@ -99,6 +115,7 @@ export function home({ meta, unitCounts, resume, mistakes }) {
 
   return `
     ${resumeCard}
+    ${simCard}
     ${mistakeCard}
     ${kanoonCard}
     <div class="card src-m">
@@ -216,7 +233,7 @@ export function paused(title, elapsed, answered, total) {
     </div>`;
 }
 
-export function exam(q, { index, total, picked, flagged, answered, elapsed }) {
+export function exam(q, { index, total, picked, flagged, answered, elapsed, left }) {
   const progress = total ? (index + 1) / total * 100 : 0;
   const options = (q.options || []).map((text, i) => {
     const n = i + 1;
@@ -234,7 +251,7 @@ export function exam(q, { index, total, picked, flagged, answered, elapsed }) {
         ${trustPill(q)}
         <span class="pill">${yearName(q.year) || 'سال ' + fa(q.year)}</span>
         <span class="pill">سؤال دفترچه ${fa(q.q)}</span>
-        <span class="pill" id="timer" style="margin-inline-start:auto">⏱ ${esc(elapsed)}</span>
+        <span class="pill ${left && left.low ? 'lowtime' : ''}" id="timer" style="margin-inline-start:auto">${left ? '⏳ ' + esc(left.text) : '⏱ ' + esc(elapsed)}</span>
         <button type="button" class="pill pausebtn" id="pauseBtn" title="توقف آزمون">⏸ توقف</button>
       </div>
       <div class="progress" role="progressbar" aria-valuenow="${index + 1}" aria-valuemin="1" aria-valuemax="${total}">
@@ -307,6 +324,7 @@ function insightBlock(s) {
 /** کارنامهٔ درس‌به‌درس. درصد خالص می‌تواند منفی شود، پس همان‌طور نشان داده می‌شود. */
 function cardTable(sc) {
   if (!sc.subjects || sc.subjects.length < 2) return '';
+  const wgt = weighted(sc.subjects);
   const rows = sc.subjects.map(u => `
     <tr>
       <td><b>${esc(u.name)}</b></td>
@@ -314,15 +332,21 @@ function cardTable(sc) {
       <td style="color:var(--good)">${fa(u.correct)}</td>
       <td style="color:var(--bad)">${fa(u.wrong)}</td>
       <td>${fa(u.blank)}</td>
+      <td>${WEIGHTS[u.name] ? fa(WEIGHTS[u.name]) : '—'}</td>
       <td><b>${pct(u.net)}٪</b></td>
     </tr>`).join('');
   return `
     <div class="card">
       <h2>کارنامه، درس به درس</h2>
       <p class="muted" style="margin:6px 0 12px">درصد خالص = (درست − غلط×⅓) ÷ کل سؤالِ همان درس.</p>
+      ${wgt ? `<div class="hero" style="margin-bottom:12px">
+        <div><b>${pct(wgt)}٪</b><small>با ضرایب کانون</small></div>
+        <div><b>۴۵</b><small>نصاب آزاد</small></div>
+        <div><b>۳۷</b><small>نصاب ایثارگری</small></div>
+      </div>` : ''}
       <div class="tablewrap">
         <table class="report">
-          <thead><tr><th>درس</th><th>سؤال</th><th>درست</th><th>غلط</th><th>نزده</th><th>خالص</th></tr></thead>
+          <thead><tr><th>درس</th><th>سؤال</th><th>درست</th><th>غلط</th><th>نزده</th><th>ضریب</th><th>خالص</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>

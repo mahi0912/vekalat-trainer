@@ -43,6 +43,15 @@ export function resume(s) {
   }
 }
 
+/** زمانِ باقی‌مانده. اگر آزمون محدودیت ندارد null برمی‌گرداند. */
+export function remainingMs(s) {
+  if (!s || !s.limitMs) return null;
+  return Math.max(0, s.limitMs - elapsedMs(s));
+}
+
+/** وقتِ آزمونِ زمان‌دار تمام شده است؟ */
+export const isOver = s => !!(s && s.limitMs && remainingMs(s) <= 0);
+
 /** زمان سپری‌شده به میلی‌ثانیه، بدون مدتی که آزمون متوقف بوده. */
 export function elapsedMs(s) {
   if (!s) return 0;

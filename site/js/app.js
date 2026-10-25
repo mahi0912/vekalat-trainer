@@ -5,6 +5,7 @@ import * as view from './views.js';
 import * as mistakes from './mistakes.js';
 import * as history from './history.js';
 import * as report from './report.js';
+import * as sim from './simulate.js';
 import { COURSE_GROUPS } from './groups.js';
 import { esc, fa, $, on, toTop, skeleton } from './util.js';
 
@@ -31,13 +32,30 @@ function elapsed(sess) {
   return (h ? `${p(h)}:` : '') + `${p(Math.floor(sec / 60) % 60)}:${p(sec % 60)}`;
 }
 
+/** برچسبِ شمارش معکوس؛ اگر آزمون محدودیت ندارد null. */
+function left(sess) {
+  const ms = session.remainingMs(sess);
+  if (ms === null) return null;
+  const sec = Math.ceil(ms / 1000);
+  const p = n => fa(String(n).padStart(2, '0'));
+  const h = Math.floor(sec / 3600);
+  return {
+    text: (h ? `${p(h)}:` : '') + `${p(Math.floor(sec / 60) % 60)}:${p(sec % 60)}`,
+    low: ms <= 5 * 60 * 1000,
+  };
+}
+
 function startTicker() {
   stopTicker();
   ticker = setInterval(() => {
     const el = document.getElementById('timer');
     if (!el || !s) { stopTicker(); return; }
     if (session.isPaused(s)) return;
-    el.textContent = `⏱ ${elapsed(s)}`;
+    const lf = left(s);
+    if (!lf) { el.textContent = `⏱ ${elapsed(s)}`; return; }
+    el.textContent = `⏳ ${lf.text}`;
+    el.classList.toggle('lowtime', lf.low);
+    if (session.isOver(s)) { stopTicker(); timeUp(); }
   }, 1000);
 }
 const stopTicker = () => { if (ticker) { clearInterval(ticker); ticker = null; } };
@@ -62,6 +80,7 @@ function goHome() {
              `کانون وکلا ${fa(y)}`, 'kanoon-year');
   });
   on(app, '[data-kgroup]', 'click', e => showSubject(+e.currentTarget.dataset.kgroup, true));
+  on(app, '[data-sim]', 'click', e => startSim(+e.currentTarget.dataset.sim));
   if (resume) {
     $('#resumeBtn').addEventListener('click', () => { s = resume; renderExam(); });
     $('#dropBtn').addEventListener('click', () => { session.clear(); goHome(); });
@@ -171,6 +190,31 @@ function start(qs, title, mode) {
   renderExam();
 }
 
+/** دفترچهٔ تازه از سؤالات واقعی کانون، با ساختار آزمون. */
+function startSim(minutes) {
+  const seen = new Set();
+  for (const h of history.all()) for (const w of (h.wrong || [])) seen.add(w.id);
+  const { qs, short } = sim.paper(all(), seen);
+  if (!qs.length) { alert('بانک سؤال بارگذاری نشده است.'); return; }
+  if (short.length && !confirm(`برای این درس‌ها سؤال کافی نبود: ${short.join('، ')}\nبا همین تعداد شروع شود؟`)) return;
+  const title = minutes ? `آزمون شبیه‌سازی‌شدهٔ کانون — ${fa(minutes)} دقیقه` : 'آزمون شبیه‌سازی‌شدهٔ کانون';
+  s = session.create(qs, title, 'sim');
+  if (minutes) s.limitMs = minutes * 60 * 1000;
+  session.save(s);
+  homeBtn.classList.remove('hidden');
+  renderExam();
+}
+
+/** وقت تمام شد: آزمون بدون پرسش بسته می‌شود. */
+function timeUp() {
+  if (!s || s.finishedAt) return;
+  session.resume(s);
+  s.finishedAt = Date.now();
+  session.save(s);
+  alert('وقت آزمون تمام شد. کارنامه نمایش داده می‌شود.');
+  renderResults();
+}
+
 /* ---------- آزمون ---------- */
 
 function renderExam() {
@@ -193,6 +237,7 @@ function renderExam() {
     flagged: !!s.flags[q.id],
     answered: Object.keys(s.ans).length,
     elapsed: elapsed(s),
+    left: left(s),
   });
   on(app, '[data-pick]', 'click', e => {
     const pick = +e.currentTarget.dataset.pick;

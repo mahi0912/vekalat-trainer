@@ -282,3 +282,5 @@ pre.report-text{white-space:pre-wrap;word-break:break-word;direction:rtl;text-al
   background:var(--soft,rgba(127,127,127,.08));border:1px solid var(--border);border-radius:12px;
   padding:14px 16px;margin:0;font-family:inherit;font-size:.9rem;line-height:1.85;
   max-height:22rem;overflow:auto}
+.pill.lowtime{background:var(--bad-soft,rgba(220,60,60,.12));color:var(--bad);
+  border-color:var(--bad);font-weight:700}
