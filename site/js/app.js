@@ -192,9 +192,8 @@ function start(qs, title, mode) {
 
 /** دفترچهٔ تازه از سؤالات واقعی کانون، با ساختار آزمون. */
 function startSim(minutes) {
-  const seen = new Set();
-  for (const h of history.all()) for (const w of (h.wrong || [])) seen.add(w.id);
-  const { qs, short } = sim.paper(all(), seen);
+  // سؤال‌هایی که قبلاً پاسخ داده‌ای آخرِ صف می‌آیند، نه اینکه حذف شوند
+  const { qs, short } = sim.paper(all(), history.answered());
   if (!qs.length) { alert('بانک سؤال بارگذاری نشده است.'); return; }
   if (short.length && !confirm(`برای این درس‌ها سؤال کافی نبود: ${short.join('، ')}\nبا همین تعداد شروع شود؟`)) return;
   const title = minutes ? `آزمون شبیه‌سازی‌شدهٔ کانون — ${fa(minutes)} دقیقه` : 'آزمون شبیه‌سازی‌شدهٔ کانون';

@@ -43,3 +43,16 @@ export function repeatedWrong() {
   for (const h of read()) for (const w of (h.wrong || [])) n[w.id] = (n[w.id] || 0) + 1;
   return n;
 }
+
+/**
+ * هر سؤالی که تا امروز به آن پاسخ داده شده — درست یا غلط.
+ * شبیه‌ساز از این استفاده می‌کند تا هر بار دفترچهٔ تازه‌تری بچیند.
+ */
+export function answered() {
+  const set = new Set();
+  for (const h of read()) {
+    for (const id of (h.seenIds || [])) set.add(id);
+    for (const w of (h.wrong || [])) set.add(w.id);
+  }
+  return set;
+}

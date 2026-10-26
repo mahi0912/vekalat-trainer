@@ -56,3 +56,9 @@ ok('وزن‌دهی با ضرایب کانون', Math.round(weighted(subs) * 10)
 ok('درسِ ناشناخته وزن نمی‌گیرد', weighted([{ name: 'نجوم', net: 99 }]), 0);
 
 console.log(failures ? ('\n' + failures + ' تست ناموفق') : '\nهمه تست‌ها موفق');
+
+// وقتی همهٔ سؤال‌ها دیده شده‌اند، باز هم باید دفترچهٔ کامل بدهد
+var allSeen = new Set(pool.map(function (q) { return q.id; }));
+var p3 = paper(pool, allSeen);
+ok('با همه‌چیزِ دیده‌شده هم دفترچه کامل است', p3.qs.length, 140);
+ok('و باز هم بدون تکرار', new Set(p3.qs.map(function (q) { return q.id; })).size, 140);

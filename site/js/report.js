@@ -86,5 +86,7 @@ export function entry(qs, s, sc, ms) {
     })),
     wrong: qs.filter(q => s.ans[q.id] && +s.ans[q.id] !== keyOf(q))
       .map(q => ({ id: q.id, pick: +s.ans[q.id], key: keyOf(q), subject: subjectOf(q.courseUnit) })),
+    // هر سؤالی که پاسخ داده شده، تا شبیه‌ساز دفعهٔ بعد سراغ تازه‌ها برود
+    seenIds: qs.filter(q => s.ans[q.id]).map(q => q.id),
   };
 }
